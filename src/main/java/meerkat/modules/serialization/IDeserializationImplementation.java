@@ -1,12 +1,11 @@
-package projekt.modules.serialization;
+package meerkat.modules.serialization;
 
 /**
- * Pluginy oferujące funkcjonalność podgląda zserializowanych danych muszą dostarczyć implementacje logiki za pomocą
- * tego interfejsu.
+ * Pluginy oferujące funkcjonalność deserializacji muszą dostarczyć implementacje logiki za pomocą tego interfejsu.
  *
  * @author Maciej Poleski
  */
-public interface IDeserializationPreviewImplementation {
+public interface IDeserializationImplementation {
 
     /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
      * funkcjonalności serializacji. Należy pamiętać o tym, że przy deserializacji czasem chcemy uzyskać wejściowe

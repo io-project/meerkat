@@ -1,4 +1,4 @@
-package projekt.modules;
+package meerkat.modules;
 
 /**
  * Wyjątek sygnalizuje próbę załadowaniu pluginu o identyfikatorze już zajętym w danym module.

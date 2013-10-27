@@ -1,4 +1,4 @@
-package projekt.modules.core;
+package meerkat.modules.core;
 
 /**
  * Funkcjonalność oferowana przez Core dla pozostałych modułów.

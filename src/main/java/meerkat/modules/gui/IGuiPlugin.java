@@ -1,6 +1,6 @@
-package projekt.modules.gui;
+package meerkat.modules.gui;
 
-import projekt.modules.core.ICore;
+import meerkat.modules.core.ICore;
 
 /**
  * Pluginy dostarczające GUI muszą implementować ten interfejs

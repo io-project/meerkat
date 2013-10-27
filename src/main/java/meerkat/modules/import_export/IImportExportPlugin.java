@@ -1,6 +1,6 @@
-package projekt.modules.import_export;
+package meerkat.modules.import_export;
 
-import projekt.modules.IPlugin;
+import meerkat.modules.IPlugin;
 
 /**
  * Pluginy obsługujące proces importu i exportu muszą implementować ten interfejs.

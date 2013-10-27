@@ -1,4 +1,4 @@
-package projekt.modules.import_export;
+package meerkat.modules.import_export;
 
 /**
  * Pluginy oferujące funkcjonalność importowania muszą dostarczyć implementacje logiki za pomocą tego interfejsu.

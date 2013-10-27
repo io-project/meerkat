@@ -1,6 +1,6 @@
-package projekt.modules.encryption;
+package meerkat.modules.encryption;
 
-import projekt.modules.IPlugin;
+import meerkat.modules.IPlugin;
 
 /**
  * Pluginy obsługujące proces szyfrowania muszą implementować ten interfejs.

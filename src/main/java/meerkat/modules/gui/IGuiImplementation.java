@@ -1,4 +1,4 @@
-package projekt.modules.gui;
+package meerkat.modules.gui;
 
 /**
  * Pluginy GUI muszą dostarczyć funkcjonalność implementując ten interfejs.

@@ -1,14 +1,13 @@
-package projekt.modules.core;
+package meerkat.modules.core;
 
-import projekt.modules.core.ICore;
-import projekt.modules.IPlugin;
-import projekt.modules.NoGuiPluginRegistered;
-import projekt.modules.PluginCollisionException;
-import projekt.modules.encryption.IEncryptionPlugin;
-import projekt.modules.gui.IGuiPlugin;
-import projekt.modules.import_export.IImportExportPlugin;
-import projekt.modules.plausible_deniability.IOverridePlugin;
-import projekt.modules.serialization.ISerializationPlugin;
+import meerkat.modules.IPlugin;
+import meerkat.modules.NoGuiPluginRegistered;
+import meerkat.modules.PluginCollisionException;
+import meerkat.modules.encryption.IEncryptionPlugin;
+import meerkat.modules.gui.IGuiPlugin;
+import meerkat.modules.import_export.IImportExportPlugin;
+import meerkat.modules.plausible_deniability.IOverridePlugin;
+import meerkat.modules.serialization.ISerializationPlugin;
 
 import java.util.ArrayList;
 import java.util.List;

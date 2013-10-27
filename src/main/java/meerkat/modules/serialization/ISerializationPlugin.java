@@ -1,6 +1,6 @@
-package projekt.modules.serialization;
+package meerkat.modules.serialization;
 
-import projekt.modules.IPlugin;
+import meerkat.modules.IPlugin;
 
 /**
  * Pluginy obsługujące proces serializacji muszą implementować ten interfejs.

@@ -1,4 +1,4 @@
-package projekt.modules.plausible_deniability;
+package meerkat.modules.plausible_deniability;
 
 /**
  * Pluginy oferujące funkcjonalność niszczenia danych muszą dostarczyć implementacje logiki za pomocą tego interfejsu.

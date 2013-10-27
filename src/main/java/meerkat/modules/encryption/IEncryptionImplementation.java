@@ -1,11 +1,11 @@
-package projekt.modules.encryption;
+package meerkat.modules.encryption;
 
 /**
- * Pluginy oferujące funkcjonalność deszyfrowania muszą dostarczyć implementacje logiki za pomocą tego interfejsu.
+ * Pluginy oferujące funkcjonalność szyfrowania muszą dostarczyć implementacje logiki za pomocą tego interfejsu.
  *
  * @author Maciej Poleski
  */
-public interface IDecryptionImplementation {
+public interface IEncryptionImplementation {
 
     /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
      * funkcjonalności szyfrowania. Należy pamiętać o tym, że przy deszyfrowaniu czasem chcemy uzyskać wejściowe

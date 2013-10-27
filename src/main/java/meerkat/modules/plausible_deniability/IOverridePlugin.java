@@ -1,6 +1,6 @@
-package projekt.modules.plausible_deniability;
+package meerkat.modules.plausible_deniability;
 
-import projekt.modules.IPlugin;
+import meerkat.modules.IPlugin;
 
 /**
  * Pluginy obsługujące proces niszczenia danych muszą implementować ten interfejs.

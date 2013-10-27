@@ -1,9 +1,9 @@
-package projekt.modules.core;
+package meerkat.modules.core;
 
-import projekt.modules.encryption.IEncryptionPlugin;
-import projekt.modules.import_export.IImportExportPlugin;
-import projekt.modules.plausible_deniability.IOverridePlugin;
-import projekt.modules.serialization.ISerializationPlugin;
+import meerkat.modules.encryption.IEncryptionPlugin;
+import meerkat.modules.import_export.IImportExportPlugin;
+import meerkat.modules.plausible_deniability.IOverridePlugin;
+import meerkat.modules.serialization.ISerializationPlugin;
 
 /**
  * Dobór pluginów w celu realizacji całokształtu działań związanych z szyfrowaniem

@@ -1,4 +1,4 @@
-package projekt.modules;
+package meerkat.modules;
 
 /**
  * Sygnalizuje rozruch aplikacji bez dostarczenia jakiegokolwiek GUI.

@@ -1,4 +1,4 @@
-package projekt.modules.core;
+package meerkat.modules.core;
 
 /**
  * Interfejs pozwalający na komunikacje z zadaniem.

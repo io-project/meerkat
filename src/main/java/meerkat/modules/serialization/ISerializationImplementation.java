@@ -1,4 +1,4 @@
-package projekt.modules.serialization;
+package meerkat.modules.serialization;
 
 /**
  * Pluginy oferujące funkcjonalność serializacji muszą dostarczyć implementacje logiki szyfrowania za pomocą tego

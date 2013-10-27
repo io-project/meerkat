@@ -1,4 +1,4 @@
-package projekt.modules;
+package meerkat.modules;
 
 /**
  * Pluginy muszą implementować ten interfejs.
