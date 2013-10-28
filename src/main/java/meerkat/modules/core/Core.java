@@ -17,7 +17,7 @@ import java.util.List;
  *
  * @author Maciej Poleski
  */
-public class Core implements ICore {
+class Core implements ICore {
     List<ISerializationPlugin> serializationPlugins = new ArrayList<ISerializationPlugin>();
     List<IEncryptionPlugin> encryptionPlugins = new ArrayList<IEncryptionPlugin>();
     List<IImportExportPlugin> importExportPlugins = new ArrayList<IImportExportPlugin>();
@@ -44,13 +44,11 @@ public class Core implements ICore {
         overridePlugins.add(p);
     }
 
-    void registerPlugin(IGuiPlugin p)
-    {
-        if(guiPlugin!=null)
-        {
+    void registerPlugin(IGuiPlugin p) {
+        if (guiPlugin != null) {
             throw new PluginCollisionException("GUI module already registered");
         }
-        guiPlugin=p;
+        guiPlugin = p;
     }
 
     private void checkForPluginIdCollision(List<? extends IPlugin> pluginList, IPlugin plugin) {
@@ -67,8 +65,7 @@ public class Core implements ICore {
     public void start() {
         // Application entry point.
 
-        if(guiPlugin==null)
-        {
+        if (guiPlugin == null) {
             throw new NoGuiPluginRegistered();
         }
 
@@ -76,5 +73,15 @@ public class Core implements ICore {
         guiPlugin.getImplementation().start();
 
         System.out.println("Hello World!");
+    }
+
+    @Override
+    public IJob prepareEncryptionJob(EncryptionPipeline pipeline, Runnable handler) {
+        return new EncryptionJob(pipeline, handler, guiPlugin.getImplementation().getDialogBuilderFactory());
+    }
+
+    @Override
+    public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, Runnable handler) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

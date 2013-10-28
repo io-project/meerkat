@@ -11,4 +11,9 @@ public interface IGuiImplementation {
      * Tworzy funkcjonalny interfejs użytkownika w oparciu o dane udostępnione przez moduł Core.
      */
     void start();
+
+    /**
+     * Zwraca fabrykę budowniczych okien dialogowych.
+     */
+    IDialogBuilderFactory getDialogBuilderFactory();
 }

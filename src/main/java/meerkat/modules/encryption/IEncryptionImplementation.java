@@ -1,11 +1,13 @@
 package meerkat.modules.encryption;
 
+import meerkat.modules.IPrepare;
+
 /**
  * Pluginy oferujące funkcjonalność szyfrowania muszą dostarczyć implementacje logiki za pomocą tego interfejsu.
  *
  * @author Maciej Poleski
  */
-public interface IEncryptionImplementation {
+public interface IEncryptionImplementation extends IPrepare {
 
     /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
      * funkcjonalności szyfrowania. Należy pamiętać o tym, że przy deszyfrowaniu czasem chcemy uzyskać wejściowe
