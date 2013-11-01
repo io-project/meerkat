@@ -272,10 +272,8 @@ class EncryptionJob implements IJob {
 
                 initializeNextState(new FinishedState());
 
-            } catch (IOException e) {
+            } catch (IOException | InterruptedException e) {
                 abortBecauseOfFailure(e); // TODO: Może jakiś opis?
-            } catch (InterruptedException e) {
-                abortBecauseOfFailure(e);
             }
             synchronized (this) {
                 return nextState;

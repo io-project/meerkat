@@ -18,10 +18,10 @@ import java.util.List;
  * @author Maciej Poleski
  */
 class Core implements ICore {
-    private final List<ISerializationPlugin> serializationPlugins = new ArrayList<ISerializationPlugin>();
-    private final List<IEncryptionPlugin> encryptionPlugins = new ArrayList<IEncryptionPlugin>();
-    private final List<IImportExportPlugin> importExportPlugins = new ArrayList<IImportExportPlugin>();
-    private final List<IOverridePlugin> overridePlugins = new ArrayList<IOverridePlugin>();
+    private final List<ISerializationPlugin> serializationPlugins = new ArrayList<>();
+    private final List<IEncryptionPlugin> encryptionPlugins = new ArrayList<>();
+    private final List<IImportExportPlugin> importExportPlugins = new ArrayList<>();
+    private final List<IOverridePlugin> overridePlugins = new ArrayList<>();
     private IGuiPlugin guiPlugin;
 
     void registerPlugin(ISerializationPlugin p) {

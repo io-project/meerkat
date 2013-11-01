@@ -16,6 +16,7 @@ public interface IGuiPlugin {
 
     /**
      * Dostarcza interfejs modułu Core dla pluginu GUI.
+     *
      * @param core Implementacja ICore zdolna do kierowania pozostałymi modułami.
      */
     void provideCore(ICore core);
