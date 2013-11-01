@@ -1,4 +1,4 @@
-package meerkat.plugins.serialization.simple;
+package meerkat.modules.serialization.simpleSerialization;
 
 import java.io.Serializable;
 
