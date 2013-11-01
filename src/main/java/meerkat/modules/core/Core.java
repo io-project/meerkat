@@ -18,11 +18,11 @@ import java.util.List;
  * @author Maciej Poleski
  */
 class Core implements ICore {
-    List<ISerializationPlugin> serializationPlugins = new ArrayList<ISerializationPlugin>();
-    List<IEncryptionPlugin> encryptionPlugins = new ArrayList<IEncryptionPlugin>();
-    List<IImportExportPlugin> importExportPlugins = new ArrayList<IImportExportPlugin>();
-    List<IOverridePlugin> overridePlugins = new ArrayList<IOverridePlugin>();
-    IGuiPlugin guiPlugin;
+    private final List<ISerializationPlugin> serializationPlugins = new ArrayList<ISerializationPlugin>();
+    private final List<IEncryptionPlugin> encryptionPlugins = new ArrayList<IEncryptionPlugin>();
+    private final List<IImportExportPlugin> importExportPlugins = new ArrayList<IImportExportPlugin>();
+    private final List<IOverridePlugin> overridePlugins = new ArrayList<IOverridePlugin>();
+    private IGuiPlugin guiPlugin;
 
     void registerPlugin(ISerializationPlugin p) {
         checkForPluginIdCollision(serializationPlugins, p);
@@ -72,7 +72,7 @@ class Core implements ICore {
         guiPlugin.provideCore(this);
         guiPlugin.getImplementation().start();
 
-        System.out.println("Hello World!");
+        System.out.println("Hello World!");         // TODO: usunąć tą linie
     }
 
     @Override
@@ -82,6 +82,6 @@ class Core implements ICore {
 
     @Override
     public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, Runnable handler) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        return null; // FIXME: implementation
     }
 }

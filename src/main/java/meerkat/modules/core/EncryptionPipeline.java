@@ -11,10 +11,10 @@ import meerkat.modules.serialization.ISerializationPlugin;
  * @author Maciej Poleski
  */
 public class EncryptionPipeline {
-    ISerializationPlugin serializationPlugin;
-    IEncryptionPlugin encryptionPlugin;
-    IImportExportPlugin importExportPlugin;
-    IOverridePlugin overridePlugin;
+    private ISerializationPlugin serializationPlugin;
+    private IEncryptionPlugin encryptionPlugin;
+    private IImportExportPlugin importExportPlugin;
+    private IOverridePlugin overridePlugin;
 
     public EncryptionPipeline() {
     }

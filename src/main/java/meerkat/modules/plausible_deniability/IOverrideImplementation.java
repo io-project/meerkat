@@ -7,7 +7,7 @@ import meerkat.modules.IPrepare;
  *
  * @author Maciej Poleski
  */
-public interface IOverrideImplementation extends IPrepare {
+public interface IOverrideImplementation extends IPrepare, meerkat.modules.Runnable {
 
     /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
      * funkcjonalności bezpiecznego niszczenia danych. Należy pamiętać o tym, że dane można zniszczyć dopiero po

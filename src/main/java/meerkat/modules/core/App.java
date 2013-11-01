@@ -1,6 +1,4 @@
-package meerkat;
-
-import meerkat.modules.core.Core;
+package meerkat.modules.core;
 
 /**
  * Ta klasa służy do uruchomienia aplikacji.

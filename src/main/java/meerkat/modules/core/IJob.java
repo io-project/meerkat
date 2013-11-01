@@ -14,12 +14,24 @@ public interface IJob {
         PREPARING,
         WORKING,
         FINISHED,
+        FAILED,
         ABORTED,
     }
 
+    /**
+     * Uruchamia zadanie.
+     */
     void start();
 
+    /**
+     * Anuluje zadanie.
+     */
     void abort();
 
+    /**
+     * Zwraca obecny stan zadania
+     *
+     * @return Obecny stan zadania
+     */
     State getState();
 }
