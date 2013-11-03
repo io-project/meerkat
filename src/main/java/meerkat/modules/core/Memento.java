@@ -24,14 +24,13 @@ class Memento implements Serializable {
     /**
      * Zamienia zestaw identyfikatorów w blok bajtów (na potrzeby eksportu)
      *
-     * @param memento Obiekt zainicjalizowany wybranym EncryptionPipeline.
      * @return Bufor zawierający komplet danych
-     * @throws IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca)
+     * @throws java.io.IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca)
      */
-    static ByteBuffer getMementoByteBuffer(Memento memento) throws IOException {
+    ByteBuffer getMementoByteBuffer() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(memento);
+        oos.writeObject(this);
         return ByteBuffer.wrap(baos.toByteArray());
     }
 }

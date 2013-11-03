@@ -254,21 +254,31 @@ class EncryptionJob implements IJob {
 
                     // Memento
                     Memento memento = new Memento(pipeline);
-                    ByteBuffer pluginSet = Memento.getMementoByteBuffer(memento);
+                    ByteBuffer pluginSet = memento.getMementoByteBuffer();
+                    ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
+                    lengthBuffer.putInt(pluginSet.position());
+                    pluginSet.flip();
+                    lengthBuffer.flip();
                     exportThread.start();
+                    encryptionExportPipe.sink().write(lengthBuffer);
                     encryptionExportPipe.sink().write(pluginSet); // Teraz jest pewność, że te dane trafią do eksportu jako pierwsze
 
                     // Start
                     serializationThread.start();
                     encryptionThread.start();
-                    overrideThread.start();
                 }
 
                 // End
                 serializationThread.join();
                 encryptionThread.join();
                 exportThread.join();
-                overrideThread.join();
+
+                synchronized (this) {
+                    if (nextState == null) {
+                        overrideThread.start();
+                        overrideThread.join();
+                    }
+                }
 
                 initializeNextState(new FinishedState());
 
