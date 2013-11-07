@@ -11,13 +11,8 @@ public interface IGuiPlugin {
 
     /**
      * Zwraca implementacje logiki GUI.
-     */
-    IGuiImplementation getImplementation();
-
-    /**
-     * Dostarcza interfejs modułu Core dla pluginu GUI.
      *
      * @param core Implementacja ICore zdolna do kierowania pozostałymi modułami.
      */
-    void provideCore(ICore core);
+    IGuiImplementation getImplementation(ICore core);
 }

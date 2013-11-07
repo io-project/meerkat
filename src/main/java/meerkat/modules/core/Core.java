@@ -4,6 +4,7 @@ import meerkat.modules.IPlugin;
 import meerkat.modules.NoGuiPluginRegistered;
 import meerkat.modules.PluginCollisionException;
 import meerkat.modules.encryption.IEncryptionPlugin;
+import meerkat.modules.gui.IGuiImplementation;
 import meerkat.modules.gui.IGuiPlugin;
 import meerkat.modules.import_export.IImportExportPlugin;
 import meerkat.modules.plausible_deniability.IOverridePlugin;
@@ -23,6 +24,7 @@ class Core implements ICore {
     private final List<IImportExportPlugin> importExportPlugins = new ArrayList<>();
     private final List<IOverridePlugin> overridePlugins = new ArrayList<>();
     private IGuiPlugin guiPlugin;
+    private IGuiImplementation guiImplementation;
 
     void registerPlugin(ISerializationPlugin p) {
         checkForPluginIdCollision(serializationPlugins, p);
@@ -69,19 +71,18 @@ class Core implements ICore {
             throw new NoGuiPluginRegistered();
         }
 
-        guiPlugin.provideCore(this);
-        guiPlugin.getImplementation().start();
+        guiImplementation = guiPlugin.getImplementation(this);
 
         System.out.println("Hello World!");         // TODO: usunąć tą linie
     }
 
     @Override
     public IJob prepareEncryptionJob(EncryptionPipeline pipeline, Runnable handler) {
-        return new EncryptionJob(pipeline, handler, guiPlugin.getImplementation().getDialogBuilderFactory());
+        return new EncryptionJob(pipeline, handler, guiImplementation.getDialogBuilderFactory());
     }
 
     @Override
     public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, Runnable handler) {
-        return null; // FIXME: implementation
+        return new DecryptionJob(importPlugin, handler, guiImplementation.getDialogBuilderFactory());
     }
 }
