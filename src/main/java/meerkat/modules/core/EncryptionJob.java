@@ -307,7 +307,10 @@ class EncryptionJob implements IJob {
         }
     }
 
-    private class AbortedState implements IState {
+    /**
+     * Klasa bazowa stanów które już nie ulegną zmianie.
+     */
+    private abstract class DeadEndState implements IState {
         @Override
         public IState start() {
             return this; // Pozostajemy w tym stanie do końca - kontekst wykryje to jako sygnał do zakończenia
@@ -315,8 +318,11 @@ class EncryptionJob implements IJob {
 
         @Override
         public void abort() {
-            // Nie ma nic do zrobienia - już anulowano
+            // Nie ma nic do zrobienia - już zakończono
         }
+    }
+
+    private class AbortedState extends DeadEndState {
 
         @Override
         public State getState() {
@@ -324,16 +330,7 @@ class EncryptionJob implements IJob {
         }
     }
 
-    private class FinishedState implements IState {
-        @Override
-        public IState start() {
-            return this; // Pozostajemy w tym stanie do końca - kontekst wykryje to jako sygnał do zakończenia
-        }
-
-        @Override
-        public void abort() {
-            // Nie ma nic do zrobienia - zadanie już zakończono.
-        }
+    private class FinishedState extends DeadEndState {
 
         @Override
         public State getState() {
@@ -341,22 +338,12 @@ class EncryptionJob implements IJob {
         }
     }
 
-    private class FailedState implements IState {
+    private class FailedState extends DeadEndState {
         public FailedState() {
         }
 
         public FailedState(Exception e) {
             //TODO: Wykorzystać wyjątek aby dostarczyć informacje
-        }
-
-        @Override
-        public IState start() {
-            return this; // Pozostajemy w tym stanie do końca - kontekst wykryje to jako sygnał do zakończenia
-        }
-
-        @Override
-        public void abort() {
-            // Nie ma nic do zrobienia - zadanie już zakończono.
         }
 
         @Override
