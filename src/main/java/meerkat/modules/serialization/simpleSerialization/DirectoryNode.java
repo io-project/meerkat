@@ -15,9 +15,15 @@ public class DirectoryNode implements Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 	private final String name;
-	private List<DirectoryNode> content;
+	private List<DirectoryNode> content = new ArrayList<DirectoryNode>();
 	private long size;
 	private boolean isDirectory = false;
+	
+	public void print() {
+		System.out.println(name);
+		for(DirectoryNode node : content)
+			node.print();
+	}
 	
 	public DirectoryNode(String path) {
 		name = path;

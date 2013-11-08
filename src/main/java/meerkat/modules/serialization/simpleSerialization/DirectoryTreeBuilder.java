@@ -22,11 +22,11 @@ public class DirectoryTreeBuilder {
 	private DirectoryNode DirectoryDFS(File file) {
 
 		DirectoryNode node = new DirectoryNode(file.getAbsolutePath());
+		
 
 		if (file.isFile()) {
 			node.setSize(file.length());
 		} else if (file.isDirectory()) {
-
 			node.setDirectory(true);
 
 			List<DirectoryNode> content = new ArrayList<DirectoryNode>();
@@ -35,7 +35,7 @@ public class DirectoryTreeBuilder {
 
 			for (String s : file.list()) {
 
-				s = file.getAbsolutePath() + File.pathSeparator + s;
+				s = file.getAbsolutePath() + File.separator + s;
 
 				DirectoryNode child = DirectoryDFS(new File(s));
 				size += child.getSize();
