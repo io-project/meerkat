@@ -11,7 +11,7 @@ import meerkat.modules.import_export.IImportExportPlugin;
  * @author Maciej Poleski
  */
 class DecryptionJob implements IJob {
-    public DecryptionJob(IImportExportPlugin importPlugin, Runnable handler, IDialogBuilderFactory dialogBuilderFactory) {
+    public DecryptionJob(IImportExportPlugin importPlugin, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory) {
     }
 
     @Override

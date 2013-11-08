@@ -38,7 +38,7 @@ class EncryptionJob implements IJob {
 
     private final EncryptionPipeline pipeline;
     private final ImplementationPack implementationPack;
-    private final Runnable handler;
+    private final IJobObserver handler;
     private final IDialogBuilderFactory dialogBuilderFactory;
     private IState currentState;
 
@@ -49,7 +49,7 @@ class EncryptionJob implements IJob {
      * @param handler              Handler na który będzie zgłaszana zmiana stanu zadania
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
      */
-    public EncryptionJob(EncryptionPipeline pipeline, Runnable handler, IDialogBuilderFactory dialogBuilderFactory) {
+    public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory) {
         this.pipeline = pipeline;
         this.implementationPack = new ImplementationPack(pipeline);
         this.handler = handler;
@@ -74,7 +74,7 @@ class EncryptionJob implements IJob {
                     synchronized (EncryptionJob.this) {
                         if (currentState == frozenState) {
                             currentState = newState;
-                            runHandler();
+                            runHandler(currentState.getState());
                         }
                         // Jeżeli się udało - ustalam kolejny krok zgodnie z ustaleniem implementacji
                         // Jeżeli się nie udało - ktoś z zewnątrz zadecydował - wykonam jego decyzję (wykorzystane w abort)
@@ -90,7 +90,7 @@ class EncryptionJob implements IJob {
             if (currentState instanceof IAbortableState) {
                 currentState.abort(); // Być może poprzedni stan jeszcze nie zakończył wykonywać swojego zadania - przerwij je.
                 currentState = new AbortedState();
-                runHandler(); // Poprzedni stan nie był anulowany - zachodzi zmiana - handler
+                runHandler(currentState.getState()); // Poprzedni stan nie był anulowany - zachodzi zmiana - handler
             }
         }
     }
@@ -104,12 +104,14 @@ class EncryptionJob implements IJob {
 
     /**
      * Ciężka - osobny wątek
+     *
+     * @param newState
      */
-    private void runHandler() {
+    private void runHandler(final State newState) {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                handler.run();
+                handler.update(EncryptionJob.this, newState);
             }
         }).start();
     }
@@ -123,7 +125,7 @@ class EncryptionJob implements IJob {
     private synchronized void setState(IState newState) {
         if (currentState != newState) {
             currentState = newState;
-            runHandler();
+            runHandler(newState.getState());
         }
     }
 

@@ -77,12 +77,12 @@ class Core implements ICore {
     }
 
     @Override
-    public IJob prepareEncryptionJob(EncryptionPipeline pipeline, Runnable handler) {
-        return new EncryptionJob(pipeline, handler, guiImplementation.getDialogBuilderFactory());
+    public IJob prepareEncryptionJob(EncryptionPipeline pipeline, IJobObserver observer) {
+        return new EncryptionJob(pipeline, observer, guiImplementation.getDialogBuilderFactory());
     }
 
     @Override
-    public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, Runnable handler) {
-        return new DecryptionJob(importPlugin, handler, guiImplementation.getDialogBuilderFactory());
+    public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, IJobObserver observer) {
+        return new DecryptionJob(importPlugin, observer, guiImplementation.getDialogBuilderFactory());
     }
 }
