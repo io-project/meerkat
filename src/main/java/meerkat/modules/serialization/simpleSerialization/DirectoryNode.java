@@ -1,6 +1,9 @@
 package meerkat.modules.serialization.simpleSerialization;
 
+import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
+import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +26,15 @@ public class DirectoryNode implements Serializable {
 		System.out.println(name);
 		for(DirectoryNode node : content)
 			node.print();
+	}
+	
+	public void DFSReadFiles(FileSender fileSender, WritableByteChannel outputChannel) throws IOException {
+		
+		fileSender.sendFile(new File(name), outputChannel);
+		
+		for(DirectoryNode node : content)
+			node.DFSReadFiles(fileSender, outputChannel);
+		
 	}
 	
 	public DirectoryNode(String path) {

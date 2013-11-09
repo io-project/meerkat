@@ -1,6 +1,7 @@
 package meerkat.modules.serialization.simpleSerialization;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
@@ -16,8 +17,9 @@ public class SimpleSerializationImplementation implements
 	private WritableByteChannel outputChannel;
 	private String path;
 	private DirectoryTreeBuilder directoryTreeBuilder = new DirectoryTreeBuilder();
+	private final FileSender fileSender = new FileSender();
 
-	//Uzytwkonik musi wybrac sciezke serializowanego pliku.
+	//Uzytkownik musi wybrac sciezke serializowanego pliku.
 	@Override
 	public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
 		// TODO Auto-generated method stub
@@ -47,6 +49,8 @@ public class SimpleSerializationImplementation implements
 		}
 		
 		//teraz nalezy wyslac zawartosc plikow
+		directoryNode.DFSReadFiles(fileSender, outputChannel);
+		
 	}
 
 	@Override
