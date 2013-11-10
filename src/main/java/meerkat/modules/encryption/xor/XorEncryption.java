@@ -7,7 +7,7 @@ import java.nio.channels.WritableByteChannel;
 import meerkat.modules.encryption.IEncryptionImplementation;
 import meerkat.modules.gui.IDialogBuilderFactory;
 
-
+//TODO napisać testy
 public class XorEncryption implements IEncryptionImplementation {
 	
 	ReadableByteChannel readChannel;
@@ -29,6 +29,8 @@ public class XorEncryption implements IEncryptionImplementation {
 				writeBuffer.putInt(b^i);
 			}
 			writeChannel.write(writeBuffer);
+			readBuffer.flip();
+			writeBuffer.flip();
 		}
 	}
 
