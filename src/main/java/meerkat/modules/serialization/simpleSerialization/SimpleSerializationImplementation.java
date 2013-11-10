@@ -11,11 +11,16 @@ import java.nio.channels.WritableByteChannel;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.serialization.ISerializationImplementation;
 
+/**
+ * 
+ * @author Jakub Ciesla
+ *
+ */
 public class SimpleSerializationImplementation implements
 		ISerializationImplementation {
 	
 	private WritableByteChannel outputChannel;
-	private String path;
+	public String path;
 	private DirectoryTreeBuilder directoryTreeBuilder = new DirectoryTreeBuilder();
 	private final FileSender fileSender = new FileSender();
 

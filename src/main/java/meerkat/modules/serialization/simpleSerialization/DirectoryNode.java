@@ -13,30 +13,33 @@ import java.util.List;
 
 public class DirectoryNode implements Serializable {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	private final String name;
 	private List<DirectoryNode> content = new ArrayList<DirectoryNode>();
 	private long size;
 	private boolean isDirectory = false;
-	
+
 	public void print() {
 		System.out.println(name);
-		for(DirectoryNode node : content)
+		for (DirectoryNode node : content)
 			node.print();
 	}
-	
-	public void DFSReadFiles(FileSender fileSender, WritableByteChannel outputChannel) throws IOException {
-		
-		fileSender.sendFile(new File(name), outputChannel);
-		
-		for(DirectoryNode node : content)
+
+	public void DFSReadFiles(FileSender fileSender,
+			WritableByteChannel outputChannel) throws IOException {
+
+		File file = new File(name);
+
+		if (file.isFile()) {
+			fileSender.sendFile(file, outputChannel);
+		}
+
+		for (DirectoryNode node : content) {
 			node.DFSReadFiles(fileSender, outputChannel);
-		
+		}
+
 	}
-	
+
 	public DirectoryNode(String path) {
 		name = path;
 	}

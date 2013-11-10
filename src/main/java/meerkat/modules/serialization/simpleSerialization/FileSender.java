@@ -26,12 +26,14 @@ public class FileSender {
 			MappedByteBuffer mb = ch.map(FileChannel.MapMode.READ_ONLY, red,
 					read);
 			
+			
 			int nGet;
 			
 			while (mb.hasRemaining()) {
 				
 				nGet = Math.min(mb.remaining(), SIZE);
 				mb.get(buffer, 0, nGet);
+				
 
 				ByteBuffer buf = ByteBuffer.allocate(nGet+1);
 				buf.clear();

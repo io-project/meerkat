@@ -9,8 +9,7 @@ import java.util.List;
  */
 public class DirectoryTreeBuilder {
 
-	// Narazie olewamy dowiązania.
-	// Należy dodać obsługę wyjątków, np braku dostępu do plików, itd.
+	// Narazie nie przejmujemy się dowiązaniami.
 
 	public DirectoryNode buildTree(String pathToRoot) {
 
