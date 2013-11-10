@@ -10,9 +10,6 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 
 public class FileSender {
-	private static final int SIZE = 1024 * 100; // wielkość bufferu przy
-												// mapowaniu pliku
-	private byte[] buffer = new byte[SIZE];
 
 	public void sendFile(File file, WritableByteChannel outputChannel) throws IOException {
 		FileInputStream f = new FileInputStream(file);
@@ -27,23 +24,9 @@ public class FileSender {
 					read);
 			
 			
-			int nGet;
-			
 			while (mb.hasRemaining()) {
 				
-				nGet = Math.min(mb.remaining(), SIZE);
-				mb.get(buffer, 0, nGet);
-				
-
-				ByteBuffer buf = ByteBuffer.allocate(nGet+1);
-				buf.clear();
-				buf.put(buffer);
-
-				buf.flip();
-				
-				while (buf.hasRemaining()) {
-					outputChannel.write(buf);
-				}
+				outputChannel.write(mb);
 				
 			}
 			
