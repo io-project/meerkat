@@ -1,4 +1,4 @@
-package meerkat.modules.encryption.basic_encryption;
+package meerkat.modules.encryption.xor;
 import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;

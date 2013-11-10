@@ -1,4 +1,4 @@
-package meerkat.modules.encryption.basic_encryption;
+package meerkat.modules.encryption.xor;
 
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.encryption.IEncryptionImplementation;
