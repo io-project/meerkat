@@ -1,9 +1,6 @@
 package meerkat.modules.core;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
+import java.io.*;
 import java.nio.ByteBuffer;
 
 /**
@@ -22,15 +19,35 @@ class Memento implements Serializable {
     }
 
     /**
-     * Zamienia zestaw identyfikatorów w blok bajtów (na potrzeby eksportu)
+     * Zamienia zestaw identyfikatorów w blok bajtów (na potrzeby eksportu).
      *
-     * @return Bufor zawierający komplet danych
-     * @throws java.io.IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca)
+     * @return Bufor zawierający komplet danych.
+     * @throws java.io.IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca).
      */
-    ByteBuffer getMementoByteBuffer() throws IOException {
+    ByteBuffer mementoToByteBuffer() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ObjectOutputStream oos = new ObjectOutputStream(baos);
         oos.writeObject(this);
         return ByteBuffer.wrap(baos.toByteArray());
+    }
+
+    /**
+     * Zamienia blok bajtów na zestaw identyfikatorów (na potrzeby importu).
+     *
+     * @param byteBuffer Bufor zawierający komplet danych.
+     * @return Memento zbudowane z bloku bajtów.
+     * @throws IOException Jeżeli coś się nie uda, np. blok bajtów jest błędny/niekompletny.
+     */
+    static Memento byteBufferToMemento(ByteBuffer byteBuffer) throws IOException {
+        ByteArrayInputStream bais = new ByteArrayInputStream(byteBuffer.array());
+        ObjectInputStream ois = new ObjectInputStream(bais);
+        Memento result = null;
+        try {
+            result = (Memento) ois.readObject();
+        } catch (ClassNotFoundException ignored) {
+            // Absolutnie niemożliwe
+            assert false;
+        }
+        return result;
     }
 }

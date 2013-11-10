@@ -256,7 +256,7 @@ class EncryptionJob implements IJob {
 
                     // Memento
                     Memento memento = new Memento(pipeline);
-                    ByteBuffer pluginSet = memento.getMementoByteBuffer();
+                    ByteBuffer pluginSet = memento.mementoToByteBuffer();
                     ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
                     lengthBuffer.putInt(pluginSet.position());
                     pluginSet.flip();
