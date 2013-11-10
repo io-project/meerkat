@@ -2,6 +2,7 @@ package meerkat.modules.serialization.simpleSerialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInput;
 import java.io.ObjectInputStream;
@@ -40,7 +41,11 @@ public class SimpleDeserializationImplementation implements
 		in = new ObjectInputStream(bis);
 		DirectoryNode node = (DirectoryNode) in.readObject();
 
-		new DirectoryTreeCreater().createTree(node);
+		if(!path.endsWith(File.separator)) {
+			path += File.separator;
+		}
+		
+		new DirectoryTreeCreater().createTree(node, path);
 	}
 	
 	public static int bytesToInt(byte[] int_bytes) throws IOException {

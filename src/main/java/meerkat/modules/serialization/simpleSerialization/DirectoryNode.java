@@ -15,6 +15,7 @@ public class DirectoryNode implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 	private final String name;
+	private final String relativePath;
 	private List<DirectoryNode> content = new ArrayList<DirectoryNode>();
 	private long size;
 	private boolean isDirectory = false;
@@ -40,8 +41,9 @@ public class DirectoryNode implements Serializable {
 
 	}
 
-	public DirectoryNode(String path) {
-		name = path;
+	public DirectoryNode(String path, String relativePath) {
+		this.name = path;
+		this.relativePath = relativePath;
 	}
 
 	public String getName() {
@@ -70,6 +72,10 @@ public class DirectoryNode implements Serializable {
 
 	public void setDirectory(boolean isDirectory) {
 		this.isDirectory = isDirectory;
+	}
+
+	public String getRelativePath() {
+		return relativePath;
 	}
 
 }

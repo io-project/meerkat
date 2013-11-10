@@ -13,14 +13,14 @@ public class DirectoryTreeBuilder {
 
 	public DirectoryNode buildTree(String pathToRoot) {
 
-		DirectoryNode root = DirectoryDFS(new File(pathToRoot));
+		DirectoryNode root = DirectoryDFS(new File(pathToRoot), "");
 
 		return root;
 	}
 
-	private DirectoryNode DirectoryDFS(File file) {
+	private DirectoryNode DirectoryDFS(File file, String relativePath) {
 
-		DirectoryNode node = new DirectoryNode(file.getAbsolutePath());
+		DirectoryNode node = new DirectoryNode(file.getAbsolutePath(), relativePath + file.getName() );
 		
 
 		if (file.isFile()) {
@@ -36,7 +36,7 @@ public class DirectoryTreeBuilder {
 
 				s = file.getAbsolutePath() + File.separator + s;
 
-				DirectoryNode child = DirectoryDFS(new File(s));
+				DirectoryNode child = DirectoryDFS(new File(s), relativePath + file.getName() + File.separator);
 				size += child.getSize();
 
 				content.add(child);
