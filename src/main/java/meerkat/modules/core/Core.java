@@ -3,6 +3,7 @@ package meerkat.modules.core;
 import meerkat.modules.IPlugin;
 import meerkat.modules.NoGuiPluginRegistered;
 import meerkat.modules.PluginCollisionException;
+import meerkat.modules.PluginNotFoundException;
 import meerkat.modules.encryption.IEncryptionPlugin;
 import meerkat.modules.gui.IGuiImplementation;
 import meerkat.modules.gui.IGuiPlugin;
@@ -18,7 +19,7 @@ import java.util.List;
  *
  * @author Maciej Poleski
  */
-class Core implements ICore {
+class Core implements ICore, IPluginManager {
     private final List<ISerializationPlugin> serializationPlugins = new ArrayList<>();
     private final List<IEncryptionPlugin> encryptionPlugins = new ArrayList<>();
     private final List<IImportExportPlugin> importExportPlugins = new ArrayList<>();
@@ -77,12 +78,31 @@ class Core implements ICore {
     }
 
     @Override
-    public IJob prepareEncryptionJob(EncryptionPipeline pipeline, IJobObserver observer) {
-        return new EncryptionJob(pipeline, observer, guiImplementation.getDialogBuilderFactory());
+    public IJob prepareEncryptionJob(EncryptionPipeline pipeline, IJobObserver observer, IResultHandler<Void> resultHandler) {
+        return new EncryptionJob(pipeline, observer, guiImplementation.getDialogBuilderFactory(), resultHandler);
     }
 
     @Override
-    public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, IJobObserver observer) {
-        return new DecryptionJobTemplate(importPlugin, observer, guiImplementation.getDialogBuilderFactory());
+    public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, IJobObserver observer, IResultHandler<Void> resultHandler) {
+        return new DecryptionJobTemplate<>(importPlugin, observer, guiImplementation.getDialogBuilderFactory(), this, new DecryptionImplementationProvider(), resultHandler);
+    }
+
+    private <T extends IPlugin> T getPluginForId(String id, List<T> plugins) throws PluginNotFoundException {
+        for (T p : plugins) {
+            if (p.getUniquePluginId().equals(id)) {
+                return p;
+            }
+        }
+        throw new PluginNotFoundException(id);
+    }
+
+    @Override
+    public ISerializationPlugin getSerializationPluginForId(String id) throws PluginNotFoundException {
+        return getPluginForId(id, serializationPlugins);
+    }
+
+    @Override
+    public IEncryptionPlugin getEncryptionPluginForId(String id) throws PluginNotFoundException {
+        return getPluginForId(id, encryptionPlugins);
     }
 }

@@ -1,20 +1,33 @@
 package meerkat.modules.core;
 
+import meerkat.modules.PluginNotFoundException;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.import_export.IImportExportPlugin;
+import meerkat.modules.import_export.IImportImplementation;
+
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.Pipe;
+import java.nio.channels.spi.SelectorProvider;
 
 /**
  * Ta klasa obsługuje zadanie deszyfrowania.
  * <p/>
  * To nie jest część API.
  *
+ * @param <T> typ ImplementationPack
+ * @param <U> typ rezultatu (dla handlera)
  * @author Maciej Poleski
  */
-class DecryptionJobTemplate<T> extends JobWithStates {
+class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
 
-    private DecryptionPipeline pipeline;
-    private T implementationPack;
+    IDialogBuilderFactory getDialogBuilderFactory() {
+        return dialogBuilderFactory;
+    }
+
     private final IDialogBuilderFactory dialogBuilderFactory;
+    private final IPluginManager pluginManager;
+    private final IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider;
     private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
         @Override
         public IState newAbortedState() {
@@ -29,9 +42,11 @@ class DecryptionJobTemplate<T> extends JobWithStates {
      * @param handler              Handler na który będzie zgłaszana zmiana stanu zadania
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
      */
-    public DecryptionJobTemplate(IImportExportPlugin importPlugin, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory) {
-        super(handler);
+    public DecryptionJobTemplate(IImportExportPlugin importPlugin, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory, IPluginManager pluginManager, IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider, IResultHandler<U> resultHandler) {
+        super(handler, resultHandler);
         this.dialogBuilderFactory = dialogBuilderFactory;
+        this.pluginManager = pluginManager;
+        this.decryptionImplementationProvider = decryptionImplementationProvider;
         this.currentState = new ReadyState(importPlugin);
     }
 
@@ -39,7 +54,6 @@ class DecryptionJobTemplate<T> extends JobWithStates {
     public void abort() {
         abort(abortedStateFactory);
     }
-
 
     private class ReadyState implements IState {
         private final IImportExportPlugin importExportPlugin;
@@ -73,18 +87,73 @@ class DecryptionJobTemplate<T> extends JobWithStates {
 
         @Override
         public IState start() {
-
-            return null;
+            IImportImplementation importImplementation = importExportPlugin.getImportImplementation();
+            if (!importImplementation.prepare(dialogBuilderFactory) || isAborted()) {
+                initializeNextState(new AbortedState());
+                return nextState;
+            }
+            initializeNextState(new ExtractingPipelineState(importExportPlugin, importImplementation));
+            return getCurrentState();
         }
 
         @Override
         public void abort() {
-
+            initializeNextState(new AbortedState());
         }
 
         @Override
         public State getState() {
-            return null;
+            return State.PREPARING;
+        }
+    }
+
+    private class ExtractingPipelineState extends BranchingState {
+        private final IImportExportPlugin importExportPlugin;
+        private final IImportImplementation importImplementation;
+
+        public ExtractingPipelineState(IImportExportPlugin importExportPlugin, IImportImplementation importImplementation) {
+            this.importExportPlugin = importExportPlugin;
+            this.importImplementation = importImplementation;
+        }
+
+        @Override
+        public IState start() {
+            try {
+                Thread importThread = new Thread(wrapRunnable(importImplementation));
+                Pipe importDecryptPipe = SelectorProvider.provider().openPipe();
+                importImplementation.setOutputChannel(importDecryptPipe.sink());
+                importThread.start();
+
+                ByteBuffer sizeBuffer = ByteBuffer.allocate(4);
+                importDecryptPipe.source().read(sizeBuffer);
+                sizeBuffer.flip();
+                int size = sizeBuffer.getInt();
+
+                ByteBuffer mementoBytes = ByteBuffer.allocate(size);
+                importDecryptPipe.source().read(mementoBytes);
+                mementoBytes.flip();
+                Memento memento = Memento.byteBufferToMemento(mementoBytes);
+
+                DecryptionPipeline decryptionPipeline = memento.getDecryptionPipeline(importExportPlugin, pluginManager);
+
+                T implementationPack = decryptionImplementationProvider.getImplementationPackFromDecryptionPipeline(decryptionPipeline, importImplementation);
+
+                initializeNextState(decryptionImplementationProvider.getPrepareImplementationState(DecryptionJobTemplate.this, implementationPack, importThread, importDecryptPipe));
+
+            } catch (IOException | PluginNotFoundException e) {
+                abortBecauseOfFailure(e);
+            }
+            return getCurrentState();
+        }
+
+        @Override
+        public void abort() {
+            initializeNextState(new AbortedState());
+        }
+
+        @Override
+        public State getState() {
+            return State.PREPARING;
         }
     }
 }

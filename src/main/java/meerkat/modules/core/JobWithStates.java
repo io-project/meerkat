@@ -3,14 +3,19 @@ package meerkat.modules.core;
 /**
  * Wyabstrahowana logika zarządzania stanami wewnętrznymi "zadań".
  *
+ * @param <T> typ rezultatu
  * @author Maciej Poleski
  */
-abstract class JobWithStates implements IJob {
+abstract class JobWithStates<T> implements IJob {
     private final IJobObserver handler;
+    private final IResultHandler<T> resultHandler;
     protected IState currentState;
+    protected T result;
+    protected Throwable resultException;
 
-    public JobWithStates(IJobObserver handler) {
+    public JobWithStates(IJobObserver handler, IResultHandler<T> resultHandler) {
         this.handler = handler;
+        this.resultHandler = resultHandler;
     }
 
     @Override
@@ -36,6 +41,13 @@ abstract class JobWithStates implements IJob {
                         // Jeżeli się nie udało - ktoś z zewnątrz zadecydował - wykonam jego decyzję (wykorzystane w abort)
                     }
                 }
+                if (resultException == null) {
+                    if (!isAborted()) {
+                        resultHandler.handleResult(result);
+                    }
+                } else {
+                    resultHandler.handleException(resultException);
+                }
             }
         }).start();
     }
@@ -48,6 +60,17 @@ abstract class JobWithStates implements IJob {
                 runHandler(currentState.getState()); // Poprzedni stan nie był anulowany - zachodzi zmiana - handler
             }
         }
+    }
+
+    /**
+     * Czy to zadanie zostało anulowane.
+     * <p/>
+     * Lekka - ten wątek
+     *
+     * @return true - wtedy i tylko wtedy gdy to zadanie zostało anulowane
+     */
+    protected boolean isAborted() {
+        return getState() == State.ABORTED;
     }
 
     @Override
@@ -63,12 +86,14 @@ abstract class JobWithStates implements IJob {
      * @param newState Nowy stan obecnego obiektu.
      */
     private void runHandler(final State newState) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.update(JobWithStates.this, newState);
-            }
-        }).start();
+        if (handler != null) {
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    handler.update(JobWithStates.this, newState);
+                }
+            }).start();
+        }
     }
 
     /**
@@ -103,11 +128,17 @@ abstract class JobWithStates implements IJob {
     }
 
     protected class FailedState extends DeadEndState {
-        public FailedState() {
-        }
+
+        private final Exception exception;
 
         public FailedState(Exception e) {
-            //TODO: Wykorzystać wyjątek aby dostarczyć informacje
+            exception = e;
+        }
+
+        @Override
+        public IState start() {
+            resultException = exception;
+            return super.start();
         }
 
         @Override
@@ -135,6 +166,10 @@ abstract class JobWithStates implements IJob {
                     this.nextState = nextState;
                 }
             }
+        }
+
+        protected synchronized IState getCurrentState() {
+            return nextState;
         }
 
         /**

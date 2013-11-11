@@ -1,5 +1,10 @@
 package meerkat.modules.core;
 
+import meerkat.modules.PluginNotFoundException;
+import meerkat.modules.encryption.IEncryptionPlugin;
+import meerkat.modules.import_export.IImportExportPlugin;
+import meerkat.modules.serialization.ISerializationPlugin;
+
 import java.io.*;
 import java.nio.ByteBuffer;
 
@@ -49,5 +54,11 @@ class Memento implements Serializable {
             assert false;
         }
         return result;
+    }
+
+    DecryptionPipeline getDecryptionPipeline(IImportExportPlugin importExportPlugin, IPluginManager pluginManager) throws PluginNotFoundException {
+        IEncryptionPlugin encryptionPlugin = pluginManager.getEncryptionPluginForId(encryptionPluginId);
+        ISerializationPlugin serializationPlugin = pluginManager.getSerializationPluginForId(serializationPluginId);
+        return new DecryptionPipeline(serializationPlugin, encryptionPlugin, importExportPlugin);
     }
 }

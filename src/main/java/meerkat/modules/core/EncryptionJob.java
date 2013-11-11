@@ -18,7 +18,7 @@ import java.nio.channels.spi.SelectorProvider;
  *
  * @author Maciej Poleski
  */
-class EncryptionJob extends JobWithStates {
+class EncryptionJob extends JobWithStates<Void> {
 
     private final EncryptionPipeline pipeline;
     private final ImplementationPack implementationPack;
@@ -36,24 +36,14 @@ class EncryptionJob extends JobWithStates {
      * @param pipeline             Gotowy pipeline ustalony przez użytkownika
      * @param handler              Handler na który będzie zgłaszana zmiana stanu zadania
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
+     * @param resultHandler        Handler do zgłaszania rezultatu.
      */
-    public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory) {
-        super(handler);
+    public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory, IResultHandler<Void> resultHandler) {
+        super(handler, resultHandler);
         this.pipeline = pipeline;
         this.implementationPack = new ImplementationPack(pipeline);
         this.dialogBuilderFactory = dialogBuilderFactory;
         currentState = new ReadyState();
-    }
-
-    /**
-     * Czy to zadanie zostało anulowane.
-     * <p/>
-     * Lekka - ten wątek
-     *
-     * @return true - wtedy i tylko wtedy gdy to zadanie zostało anulowane
-     */
-    private boolean isAborted() {
-        return getState() == State.ABORTED;
     }
 
     @Override
@@ -62,17 +52,17 @@ class EncryptionJob extends JobWithStates {
     }
 
     private static class ImplementationPack {
+        final ISerializationImplementation serialization;
+        final IEncryptionImplementation encryption;
+        final IExportImplementation export;
+        final IOverrideImplementation override;
+
         private ImplementationPack(EncryptionPipeline pipeline) {
             this.serialization = pipeline.getSerializationPlugin().getSerializationImplementation();
             this.encryption = pipeline.getEncryptionPlugin().getEncryptionImplementation();
             this.export = pipeline.getImportExportPlugin().getExportImplementation();
             this.override = pipeline.getOverridePlugin().getOverrideImplementation();
         }
-
-        final ISerializationImplementation serialization;
-        final IEncryptionImplementation encryption;
-        final IExportImplementation export;
-        final IOverrideImplementation override;
     }
 
     private class ReadyState implements IState {
