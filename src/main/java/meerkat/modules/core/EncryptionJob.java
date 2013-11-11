@@ -168,12 +168,12 @@ class EncryptionJob extends JobWithStates<Void> {
 
                 initializeNextState(new FinishedState());
 
-            } catch (IOException | InterruptedException e) {
-                abortBecauseOfFailure(e); // TODO: Może jakiś opis?
+            } catch (IOException e) {
+                abortBecauseOfFailure(e);
+            } catch (InterruptedException e) {
+                // Znaczy że zadanie zostało anulowane
             }
-            synchronized (this) {
-                return nextState;
-            }
+            return getCurrentState();
         }
 
         @Override

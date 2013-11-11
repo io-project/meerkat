@@ -4,7 +4,9 @@ import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.import_export.IImportImplementation;
 import meerkat.modules.serialization.IDeserializationImplementation;
 
+import java.io.IOException;
 import java.nio.channels.Pipe;
+import java.nio.channels.spi.SelectorProvider;
 
 /**
  * @author Maciej Poleski
@@ -46,16 +48,50 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
         };
     }
 
-    public IState getWorkerState(DecryptionImplementationPack implementationPack, DecryptionJobTemplate<DecryptionImplementationPack, Void> parent, Thread importThread, Pipe importDecryptPipe) {
+    public IState getWorkerState(final DecryptionImplementationPack implementationPack, final DecryptionJobTemplate<DecryptionImplementationPack, Void> parent, final Thread importThread, final Pipe importDecryptPipe) {
         return parent.new BranchingState() {
+            Thread decryptThread;
+            Pipe decryptDeserialPipe;
+            Thread deserialThread;
+
             @Override
             public IState start() {
-                return null;
+                try {
+                    synchronized (this) {
+                        decryptThread = new Thread(wrapRunnable(implementationPack.decryptionImplementation));
+                        decryptDeserialPipe = SelectorProvider.provider().openPipe();
+                        deserialThread = new Thread(wrapRunnable(implementationPack.deserializationImplementation));
+
+                        implementationPack.decryptionImplementation.setInputChannel(importDecryptPipe.source());
+                        implementationPack.decryptionImplementation.setOutputChannel(decryptDeserialPipe.sink());
+                        implementationPack.deserializationImplementation.setInputChannel(decryptDeserialPipe.source());
+
+                        decryptThread.start();
+                        deserialThread.start();
+                    }
+
+                    importThread.join();
+                    decryptThread.join();
+                    deserialThread.join();
+
+                    initializeNextState(parent.new FinishedState());
+
+                } catch (IOException e) {
+                    abortBecauseOfFailure(e);
+                } catch (InterruptedException e) {
+                    // Znaczy że zadanie zostało anulowane
+                }
+                return getCurrentState();
             }
 
             @Override
             public void abort() {
-
+                synchronized (this) {
+                    initializeNextState(parent.new AbortedState());
+                    deserialThread.interrupt();
+                    decryptThread.interrupt();
+                    importThread.interrupt();
+                }
             }
 
             @Override
