@@ -83,6 +83,6 @@ class Core implements ICore {
 
     @Override
     public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, IJobObserver observer) {
-        return new DecryptionJob(importPlugin, observer, guiImplementation.getDialogBuilderFactory());
+        return new DecryptionJobTemplate(importPlugin, observer, guiImplementation.getDialogBuilderFactory());
     }
 }

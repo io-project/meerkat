@@ -18,29 +18,17 @@ import java.nio.channels.spi.SelectorProvider;
  *
  * @author Maciej Poleski
  */
-class EncryptionJob implements IJob {
-    private interface IState {
-        /**
-         * @return Stan do którego należy przejść (this - koniec)
-         */
-        IState start();
-
-        void abort();
-
-        State getState();
-    }
-
-    /**
-     * Interfejs znacznikowy. Zadanie znajdujące się w tym stanie można anulować.
-     */
-    private interface IAbortableState {
-    }
+class EncryptionJob extends JobWithStates {
 
     private final EncryptionPipeline pipeline;
     private final ImplementationPack implementationPack;
-    private final IJobObserver handler;
     private final IDialogBuilderFactory dialogBuilderFactory;
-    private IState currentState;
+    private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
+        @Override
+        public IState newAbortedState() {
+            return new AbortedState();
+        }
+    };
 
     /**
      * Tworzy nowe zadanie szyfrowania. Po stworzeniu znajduje się ono w stanie State.READY
@@ -50,83 +38,11 @@ class EncryptionJob implements IJob {
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
      */
     public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory) {
+        super(handler);
         this.pipeline = pipeline;
         this.implementationPack = new ImplementationPack(pipeline);
-        this.handler = handler;
         this.dialogBuilderFactory = dialogBuilderFactory;
         currentState = new ReadyState();
-    }
-
-    @Override
-    public void start() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (; ; ) {
-                    IState frozenState;
-                    synchronized (EncryptionJob.this) {
-                        frozenState = currentState;  // W tej iteracji zajmuję się stanem z tej chwili
-                    }
-                    IState newState = frozenState.start();
-                    if (newState == frozenState) {
-                        break; // To był ostatni krok - koniec
-                    }
-                    synchronized (EncryptionJob.this) {
-                        if (currentState == frozenState) {
-                            currentState = newState;
-                            runHandler(currentState.getState());
-                        }
-                        // Jeżeli się udało - ustalam kolejny krok zgodnie z ustaleniem implementacji
-                        // Jeżeli się nie udało - ktoś z zewnątrz zadecydował - wykonam jego decyzję (wykorzystane w abort)
-                    }
-                }
-            }
-        }).start();
-    }
-
-    @Override
-    public void abort() {
-        synchronized (this) {
-            if (currentState instanceof IAbortableState) {
-                currentState.abort(); // Być może poprzedni stan jeszcze nie zakończył wykonywać swojego zadania - przerwij je.
-                currentState = new AbortedState();
-                runHandler(currentState.getState()); // Poprzedni stan nie był anulowany - zachodzi zmiana - handler
-            }
-        }
-    }
-
-    @Override
-    public State getState() {
-        synchronized (this) {
-            return currentState.getState();
-        }
-    }
-
-    /**
-     * Ciężka - osobny wątek
-     *
-     * @param newState
-     */
-    private void runHandler(final State newState) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                handler.update(EncryptionJob.this, newState);
-            }
-        }).start();
-    }
-
-    /**
-     * Lekka - ten wątek (handler asynchronicznie)
-     *
-     * @param newState Po zakończeniu tej funkcji stan obiektu będzie identyczne z newState
-     * @deprecated Wygląda na to, że jest niepotrzebna
-     */
-    private synchronized void setState(IState newState) {
-        if (currentState != newState) {
-            currentState = newState;
-            runHandler(newState.getState());
-        }
     }
 
     /**
@@ -138,6 +54,11 @@ class EncryptionJob implements IJob {
      */
     private boolean isAborted() {
         return getState() == State.ABORTED;
+    }
+
+    @Override
+    public void abort() {
+        abort(abortedStateFactory);
     }
 
     private static class ImplementationPack {
@@ -154,7 +75,7 @@ class EncryptionJob implements IJob {
         final IOverrideImplementation override;
     }
 
-    private class ReadyState implements IState, IAbortableState {
+    private class ReadyState implements IState {
         @Override
         public IState start() {
             return new PreparingState();
@@ -200,7 +121,7 @@ class EncryptionJob implements IJob {
         }
     }
 
-    private class WorkingState implements IState, IAbortableState {
+    private class WorkingState extends BranchingState {
 
         Thread serializationThread;
         Pipe serializationEncryptionPipe;
@@ -208,33 +129,6 @@ class EncryptionJob implements IJob {
         Pipe encryptionExportPipe;
         Thread exportThread;
         Thread overrideThread;
-
-        IState nextState = null;
-
-        void abortBecauseOfFailure(Exception e) {
-            initializeNextState(new FailedState(e));
-        }
-
-        private void initializeNextState(IState nextState) {
-            synchronized (this) {
-                if (this.nextState == null) {  // Być może już ustalono
-                    this.nextState = nextState;
-                }
-            }
-        }
-
-        Runnable wrapRunnable(final meerkat.modules.Runnable runnable) {
-            return new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        runnable.run();
-                    } catch (Exception e) {
-                        abortBecauseOfFailure(e);
-                    }
-                }
-            };
-        }
 
         @Override
         public IState start() {
@@ -309,48 +203,4 @@ class EncryptionJob implements IJob {
         }
     }
 
-    /**
-     * Klasa bazowa stanów które już nie ulegną zmianie.
-     */
-    private abstract class DeadEndState implements IState {
-        @Override
-        public IState start() {
-            return this; // Pozostajemy w tym stanie do końca - kontekst wykryje to jako sygnał do zakończenia
-        }
-
-        @Override
-        public void abort() {
-            // Nie ma nic do zrobienia - już zakończono
-        }
-    }
-
-    private class AbortedState extends DeadEndState {
-
-        @Override
-        public State getState() {
-            return State.ABORTED;
-        }
-    }
-
-    private class FinishedState extends DeadEndState {
-
-        @Override
-        public State getState() {
-            return State.FINISHED;
-        }
-    }
-
-    private class FailedState extends DeadEndState {
-        public FailedState() {
-        }
-
-        public FailedState(Exception e) {
-            //TODO: Wykorzystać wyjątek aby dostarczyć informacje
-        }
-
-        @Override
-        public State getState() {
-            return State.FAILED;
-        }
-    }
 }
