@@ -9,11 +9,11 @@ package meerkat.modules.core;
 abstract class JobWithStates<T> implements IJob {
     private final IJobObserver handler;
     private final IResultHandler<T> resultHandler;
-    protected IState currentState;
-    protected T result;
-    protected Throwable resultException;
+    IState currentState;
+    T result;
+    Throwable resultException;
 
-    public JobWithStates(IJobObserver handler, IResultHandler<T> resultHandler) {
+    JobWithStates(IJobObserver handler, IResultHandler<T> resultHandler) {
         this.handler = handler;
         this.resultHandler = resultHandler;
     }
@@ -52,7 +52,7 @@ abstract class JobWithStates<T> implements IJob {
         }).start();
     }
 
-    protected void abort(IAbortedStateFactory abortedStateFactory) {
+    void abort(IAbortedStateFactory abortedStateFactory) {
         synchronized (this) {
             if (currentState instanceof IAbortableState) {
                 currentState.abort(); // Być może poprzedni stan jeszcze nie zakończył wykonywać swojego zadania - przerwij je.
@@ -69,7 +69,7 @@ abstract class JobWithStates<T> implements IJob {
      *
      * @return true - wtedy i tylko wtedy gdy to zadanie zostało anulowane
      */
-    protected boolean isAborted() {
+    boolean isAborted() {
         return getState() == State.ABORTED;
     }
 
@@ -153,14 +153,14 @@ abstract class JobWithStates<T> implements IJob {
      *
      * @author Maciej Poleski
      */
-    protected abstract class BranchingState implements IState, IAbortableState {
-        protected IState nextState = null;
+    abstract class BranchingState implements IState, IAbortableState {
+        IState nextState = null;
 
         void abortBecauseOfFailure(Exception e) {
             initializeNextState(new FailedState(e));
         }
 
-        protected void initializeNextState(IState nextState) {
+        void initializeNextState(IState nextState) {
             synchronized (this) {
                 if (this.nextState == null) {  // Być może już ustalono
                     this.nextState = nextState;
@@ -168,7 +168,7 @@ abstract class JobWithStates<T> implements IJob {
             }
         }
 
-        protected synchronized IState getCurrentState() {
+        synchronized IState getCurrentState() {
             return nextState;
         }
 

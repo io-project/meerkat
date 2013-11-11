@@ -9,7 +9,7 @@ import meerkat.modules.serialization.ISerializationPlugin;
  *
  * @author Maciej Poleski
  */
-public class DecryptionPipeline {
+class DecryptionPipeline {
     private ISerializationPlugin serializationPlugin;
     private IEncryptionPlugin encryptionPlugin;
     private IImportExportPlugin importExportPlugin;

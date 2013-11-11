@@ -2,8 +2,9 @@ package meerkat.modules.core;
 
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.import_export.IImportImplementation;
-import meerkat.modules.serialization.IDeserializationImplementation;
+import meerkat.modules.serialization.IDeserializationPreviewImplementation;
 
+import javax.swing.tree.TreeModel;
 import java.io.IOException;
 import java.nio.channels.Pipe;
 import java.nio.channels.spi.SelectorProvider;
@@ -11,16 +12,16 @@ import java.nio.channels.spi.SelectorProvider;
 /**
  * @author Maciej Poleski
  */
-class DecryptionImplementationProvider implements IDecryptionImplementationProvider<DecryptionImplementationPack, IState, Void> {
+class DecryptionPreviewImplementationProvider implements IDecryptionImplementationProvider<DecryptionPreviewImplementationPack, IState, TreeModel> {
     @Override
-    public DecryptionImplementationPack getImplementationPackFromDecryptionPipeline(DecryptionPipeline pipeline, IImportImplementation importImplementation) {
+    public DecryptionPreviewImplementationPack getImplementationPackFromDecryptionPipeline(DecryptionPipeline pipeline, IImportImplementation importImplementation) {
         IDecryptionImplementation decryptionImplementation = pipeline.getEncryptionPlugin().getDecryptionImplementation();
-        IDeserializationImplementation deserializationImplementation = pipeline.getSerializationPlugin().getDeserializationImplementation();
-        return new DecryptionImplementationPack(importImplementation, decryptionImplementation, deserializationImplementation);
+        IDeserializationPreviewImplementation deserializationPreviewImplementation = pipeline.getSerializationPlugin().getDeserializationPreviewImplementation();
+        return new DecryptionPreviewImplementationPack(importImplementation, decryptionImplementation, deserializationPreviewImplementation);
     }
 
     @Override
-    public IState getPrepareImplementationState(final DecryptionJobTemplate<DecryptionImplementationPack, Void> parent, final DecryptionImplementationPack implementationPack, final Thread importThread, final Pipe importDecryptPipe) {
+    public IState getPrepareImplementationState(final DecryptionJobTemplate<DecryptionPreviewImplementationPack, TreeModel> parent, final DecryptionPreviewImplementationPack implementationPack, final Thread importThread, final Pipe importDecryptPipe) {
         return parent.new BranchingState() {
             @Override
             public IState start() {
@@ -28,7 +29,7 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
                     abort();
                     return getCurrentState();
                 }
-                if (!implementationPack.deserializationImplementation.prepare(parent.getDialogBuilderFactory()) || parent.isAborted()) {
+                if (!implementationPack.deserializationPreviewImplementation.prepare(parent.getDialogBuilderFactory()) || parent.isAborted()) {
                     abort();
                     return getCurrentState();
                 }
@@ -48,7 +49,7 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
         };
     }
 
-    IState getWorkerState(final DecryptionImplementationPack implementationPack, final DecryptionJobTemplate<DecryptionImplementationPack, Void> parent, final Thread importThread, final Pipe importDecryptPipe) {
+    private IState getWorkerState(final DecryptionPreviewImplementationPack implementationPack, final DecryptionJobTemplate<DecryptionPreviewImplementationPack, TreeModel> parent, final Thread importThread, final Pipe importDecryptPipe) {
         return parent.new BranchingState() {
             Thread decryptThread;
             Pipe decryptDeserialPipe;
@@ -60,11 +61,20 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
                     synchronized (this) {
                         decryptThread = new Thread(wrapRunnable(implementationPack.decryptionImplementation));
                         decryptDeserialPipe = SelectorProvider.provider().openPipe();
-                        deserialThread = new Thread(wrapRunnable(implementationPack.deserializationImplementation));
+                        deserialThread = new Thread(wrapRunnable(implementationPack.deserializationPreviewImplementation));
 
                         implementationPack.decryptionImplementation.setInputChannel(importDecryptPipe.source());
                         implementationPack.decryptionImplementation.setOutputChannel(decryptDeserialPipe.sink());
-                        implementationPack.deserializationImplementation.setInputChannel(decryptDeserialPipe.source());
+                        implementationPack.deserializationPreviewImplementation.setInputChannel(decryptDeserialPipe.source());
+                        final Object that = this;
+                        implementationPack.deserializationPreviewImplementation.setResultCallback(new IResultCallback<TreeModel>() {
+                            @Override
+                            public void setResult(TreeModel result) {
+                                parent.result = result;
+                                initializeNextState(parent.new FinishedState());
+                                that.notify();
+                            }
+                        });
 
                         decryptThread.start();
                         deserialThread.start();
@@ -74,7 +84,12 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
                     decryptThread.join();
                     deserialThread.join();
 
-                    initializeNextState(parent.new FinishedState());
+                    synchronized (this) {
+                        while (getCurrentState() == null) {
+                            wait();
+                        }
+                        abort();   // Trzeba posprzątać
+                    }
 
                 } catch (IOException e) {
                     abortBecauseOfFailure(e);
@@ -100,20 +115,16 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
             }
         };
     }
-
 }
 
-/**
- * @author Maciej Poleski
- */
-class DecryptionImplementationPack {
+class DecryptionPreviewImplementationPack {
     final IImportImplementation importImplementation;
     final IDecryptionImplementation decryptionImplementation;
-    final IDeserializationImplementation deserializationImplementation;
+    final IDeserializationPreviewImplementation deserializationPreviewImplementation;
 
-    DecryptionImplementationPack(IImportImplementation importImplementation, IDecryptionImplementation decryptionImplementation, IDeserializationImplementation deserializationImplementation) {
+    DecryptionPreviewImplementationPack(IImportImplementation importImplementation, IDecryptionImplementation decryptionImplementation, IDeserializationPreviewImplementation deserializationPreviewImplementation) {
         this.importImplementation = importImplementation;
         this.decryptionImplementation = decryptionImplementation;
-        this.deserializationImplementation = deserializationImplementation;
+        this.deserializationPreviewImplementation = deserializationPreviewImplementation;
     }
 }

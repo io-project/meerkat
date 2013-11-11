@@ -11,6 +11,7 @@ import meerkat.modules.import_export.IImportExportPlugin;
 import meerkat.modules.plausible_deniability.IOverridePlugin;
 import meerkat.modules.serialization.ISerializationPlugin;
 
+import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -85,6 +86,11 @@ class Core implements ICore, IPluginManager {
     @Override
     public IJob prepareDecryptionJob(IImportExportPlugin importPlugin, IJobObserver observer, IResultHandler<Void> resultHandler) {
         return new DecryptionJobTemplate<>(importPlugin, observer, guiImplementation.getDialogBuilderFactory(), this, new DecryptionImplementationProvider(), resultHandler);
+    }
+
+    @Override
+    public IJob prepareDecryptionPreviewJob(IImportExportPlugin importPlugin, IJobObserver observer, IResultHandler<TreeModel> resultHandler) {
+        return new DecryptionJobTemplate<>(importPlugin, observer, guiImplementation.getDialogBuilderFactory(), this, new DecryptionPreviewImplementationProvider(), resultHandler);
     }
 
     private <T extends IPlugin> T getPluginForId(String id, List<T> plugins) throws PluginNotFoundException {
