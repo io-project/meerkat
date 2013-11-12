@@ -14,26 +14,13 @@ import java.nio.ByteBuffer;
  * @author Maciej Poleski
  */
 
-class Memento implements Serializable {
+final class Memento implements Serializable {
     private final String serializationPluginId;
     private final String encryptionPluginId;
 
     Memento(EncryptionPipeline pipeline) {
         serializationPluginId = pipeline.getSerializationPlugin().getUniquePluginId();
         encryptionPluginId = pipeline.getEncryptionPlugin().getUniquePluginId();
-    }
-
-    /**
-     * Zamienia zestaw identyfikatorów w blok bajtów (na potrzeby eksportu).
-     *
-     * @return Bufor zawierający komplet danych.
-     * @throws java.io.IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca).
-     */
-    ByteBuffer mementoToByteBuffer() throws IOException {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        ObjectOutputStream oos = new ObjectOutputStream(baos);
-        oos.writeObject(this);
-        return ByteBuffer.wrap(baos.toByteArray());
     }
 
     /**
@@ -54,6 +41,39 @@ class Memento implements Serializable {
             assert false;
         }
         return result;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Memento memento = (Memento) o;
+
+        if (!encryptionPluginId.equals(memento.encryptionPluginId)) return false;
+        if (!serializationPluginId.equals(memento.serializationPluginId)) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = serializationPluginId.hashCode();
+        result = 31 * result + encryptionPluginId.hashCode();
+        return result;
+    }
+
+    /**
+     * Zamienia zestaw identyfikatorów w blok bajtów (na potrzeby eksportu).
+     *
+     * @return Bufor zawierający komplet danych.
+     * @throws java.io.IOException Jeżeli serializacja się nie powiedzie (nie powinno mieć miejsca).
+     */
+    ByteBuffer mementoToByteBuffer() throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        ObjectOutputStream oos = new ObjectOutputStream(baos);
+        oos.writeObject(this);
+        return ByteBuffer.wrap(baos.toByteArray());
     }
 
     DecryptionPipeline getDecryptionPipeline(IImportExportPlugin importExportPlugin, IPluginManager pluginManager) throws PluginNotFoundException {
