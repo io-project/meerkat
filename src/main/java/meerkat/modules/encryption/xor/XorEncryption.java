@@ -15,6 +15,7 @@ public class XorEncryption implements IEncryptionImplementation {
 	
 	@Override
 	public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+		//TODO popracować nad tym wyświetlaniem
 		return true;
 	}
 
