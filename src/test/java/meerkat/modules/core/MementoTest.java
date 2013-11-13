@@ -23,7 +23,7 @@ public class MementoTest {
     Memento memento1;
     Memento memento2;
 
-    private Memento newMemento(String encryptionPluginId, String serializationPluginId) {
+    public static Memento newMemento(String encryptionPluginId, String serializationPluginId) {
         EncryptionPipeline encryptionPipeline1 = createMock(EncryptionPipeline.class);
 
         IEncryptionPlugin encryptionPlugin1 = createMock(IEncryptionPlugin.class);

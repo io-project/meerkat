@@ -30,7 +30,7 @@ final class Memento implements Serializable {
      * @return Memento zbudowane z bloku bajtów.
      * @throws IOException Jeżeli coś się nie uda, np. blok bajtów jest błędny/niekompletny.
      */
-    static Memento byteBufferToMemento(ByteBuffer byteBuffer) throws IOException {
+    static Memento byteBufferToMemento(ByteBuffer byteBuffer) throws IOException {    //TODO: odczytuj tyle ile trzeba, a nie wszystko
         byte[] array = new byte[byteBuffer.remaining()];
         byteBuffer.get(array);
         ByteArrayInputStream bais = new ByteArrayInputStream(array);
