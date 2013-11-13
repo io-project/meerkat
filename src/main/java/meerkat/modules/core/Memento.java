@@ -27,12 +27,13 @@ final class Memento implements Serializable {
      * Zamienia blok bajtów na zestaw identyfikatorów (na potrzeby importu).
      *
      * @param byteBuffer Bufor zawierający komplet danych. Pozycja musi być ustawiona na początku bloku danych.
+     * @param length     Długość danych z których ma zostać rekonstruowany Memento
      * @return Memento zbudowane z bloku bajtów.
      * @throws IOException Jeżeli coś się nie uda, np. blok bajtów jest błędny/niekompletny.
      */
-    static Memento byteBufferToMemento(ByteBuffer byteBuffer) throws IOException {    //TODO: odczytuj tyle ile trzeba, a nie wszystko
-        byte[] array = new byte[byteBuffer.remaining()];
-        byteBuffer.get(array);
+    static Memento byteBufferToMemento(ByteBuffer byteBuffer, int length) throws IOException {
+        byte[] array = new byte[length];
+        byteBuffer.get(array, 0, length);
         ByteArrayInputStream bais = new ByteArrayInputStream(array);
         ObjectInputStream ois = new ObjectInputStream(bais);
         Memento result = null;

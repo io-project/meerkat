@@ -4,8 +4,11 @@ import meerkat.modules.encryption.IEncryptionPlugin;
 import meerkat.modules.serialization.ISerializationPlugin;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
 
 import static org.easymock.EasyMock.*;
@@ -20,6 +23,8 @@ public class MementoTest {
     final String encryptionPluginId2 = "Encryption Plugin 2";
     final String serializationPluginId1 = "Serialization Plugin 1";
     final String serializationPluginId2 = "Serialization Plugin 2";
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
     Memento memento1;
     Memento memento2;
 
@@ -60,7 +65,10 @@ public class MementoTest {
 
     @Test
     public void testByteBufferToMemento() throws Exception {
-
+        ByteBuffer bb = memento1.mementoToByteBuffer();
+        bb.get(); // Uszkadzam zapis
+        expectedException.expect(IOException.class);
+        Memento.byteBufferToMemento(bb, bb.remaining());
     }
 
     @Test
@@ -99,14 +107,14 @@ public class MementoTest {
         assertArrayEquals(buffer11.array(), buffer12.array());
         assertArrayEquals(buffer21.array(), buffer22.array());
 
-        assertEquals(memento1, Memento.byteBufferToMemento(buffer11));
-        assertEquals(memento1, Memento.byteBufferToMemento(buffer12));
-        assertEquals(memento2, Memento.byteBufferToMemento(buffer21));
-        assertEquals(memento2, Memento.byteBufferToMemento(buffer22));
+        assertEquals(memento1, Memento.byteBufferToMemento(buffer11, buffer11.remaining()));
+        assertEquals(memento1, Memento.byteBufferToMemento(buffer12, buffer12.remaining()));
+        assertEquals(memento2, Memento.byteBufferToMemento(buffer21, buffer21.remaining()));
+        assertEquals(memento2, Memento.byteBufferToMemento(buffer22, buffer22.remaining()));
 
         Memento memento13 = newMemento(encryptionPluginId1, serializationPluginId1);
-        assertEquals(memento13, Memento.byteBufferToMemento(memento13.mementoToByteBuffer()));
-        assertEquals(memento1, Memento.byteBufferToMemento(memento13.mementoToByteBuffer()));
+        assertEquals(memento13, Memento.byteBufferToMemento(memento13.mementoToByteBuffer(), memento13.mementoToByteBuffer().remaining()));
+        assertEquals(memento1, Memento.byteBufferToMemento(memento13.mementoToByteBuffer(), memento13.mementoToByteBuffer().remaining()));
 
     }
 

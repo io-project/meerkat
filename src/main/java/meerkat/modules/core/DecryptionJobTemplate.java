@@ -21,10 +21,6 @@ import java.nio.channels.spi.SelectorProvider;
  */
 class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
 
-    IDialogBuilderFactory getDialogBuilderFactory() {
-        return dialogBuilderFactory;
-    }
-
     private final IDialogBuilderFactory dialogBuilderFactory;
     private final IPluginManager pluginManager;
     private final IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider;
@@ -48,6 +44,10 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
         this.pluginManager = pluginManager;
         this.decryptionImplementationProvider = decryptionImplementationProvider;
         this.currentState = new ReadyState(importPlugin);
+    }
+
+    IDialogBuilderFactory getDialogBuilderFactory() {
+        return dialogBuilderFactory;
     }
 
     @Override
@@ -132,7 +132,7 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
                 ByteBuffer mementoBytes = ByteBuffer.allocate(size);
                 importDecryptPipe.source().read(mementoBytes);
                 mementoBytes.flip();
-                Memento memento = Memento.byteBufferToMemento(mementoBytes);
+                Memento memento = Memento.byteBufferToMemento(mementoBytes, size);
 
                 DecryptionPipeline decryptionPipeline = memento.getDecryptionPipeline(importExportPlugin, pluginManager);
 

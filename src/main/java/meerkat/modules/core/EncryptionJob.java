@@ -142,8 +142,7 @@ class EncryptionJob extends JobWithStates<Void> {
                     Memento memento = new Memento(pipeline);
                     ByteBuffer pluginSet = memento.mementoToByteBuffer();
                     ByteBuffer lengthBuffer = ByteBuffer.allocate(4);
-                    lengthBuffer.putInt(pluginSet.position());
-                    pluginSet.flip();
+                    lengthBuffer.putInt(pluginSet.remaining());
                     lengthBuffer.flip();
                     exportThread.start();
                     encryptionExportPipe.sink().write(lengthBuffer);
