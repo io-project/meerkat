@@ -2,6 +2,9 @@ package meerkat.modules.core;
 
 /**
  * Wyabstrahowana logika zarządzania stanami wewnętrznymi "zadań".
+ * <p/>
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
+ * implementacyjny.
  *
  * @param <T> typ rezultatu
  * @author Maciej Poleski

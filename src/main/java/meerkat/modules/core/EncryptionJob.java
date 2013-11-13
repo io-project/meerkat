@@ -14,7 +14,8 @@ import java.nio.channels.spi.SelectorProvider;
 /**
  * Ta klasa obsługuje zadanie szyfrowania.
  * <p/>
- * To nie jest część API
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
+ * implementacyjny.
  *
  * @author Maciej Poleski
  */

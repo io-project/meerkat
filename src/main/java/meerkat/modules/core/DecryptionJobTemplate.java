@@ -13,7 +13,8 @@ import java.nio.channels.spi.SelectorProvider;
 /**
  * Ta klasa obsługuje zadanie deszyfrowania.
  * <p/>
- * To nie jest część API.
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
+ * implementacyjny.
  *
  * @param <T> typ ImplementationPack
  * @param <U> typ rezultatu (dla handlera)
