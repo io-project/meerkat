@@ -9,7 +9,7 @@ import meerkat.modules.serialization.ISerializationPlugin;
  *
  * @author Maciej Poleski
  */
-public interface IPluginManager {
+interface IPluginManager {
     /**
      * Zwraca plugin serializacji o podanym id.
      *
