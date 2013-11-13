@@ -1,8 +1,12 @@
 package meerkat.modules.core;
 
+import meerkat.modules.encryption.IEncryptionPlugin;
 import meerkat.modules.import_export.IImportExportPlugin;
+import meerkat.modules.plausible_deniability.IOverridePlugin;
+import meerkat.modules.serialization.ISerializationPlugin;
 
 import javax.swing.tree.TreeModel;
+import java.util.List;
 
 /**
  * Funkcjonalność oferowana przez Core dla pozostałych modułów.
@@ -10,6 +14,26 @@ import javax.swing.tree.TreeModel;
  * @author Maciej Poleski
  */
 public interface ICore {
+    /**
+     * @return Lista (tylko do odczytu) pluginów serializacji.
+     */
+    List<ISerializationPlugin> getSerializationPlugins();
+
+    /**
+     * @return Lista (tylko do odczytu) pluginów szyfrowania.
+     */
+    List<IEncryptionPlugin> getEncryptionPlugins();
+
+    /**
+     * @return Lista (tylko do odczytu) pluginów importu/eksportu.
+     */
+    List<IImportExportPlugin> getImportExportPlugins();
+
+    /**
+     * @return Lista (tylko do odczytu) pluginów nadpisywania.
+     */
+    List<IOverridePlugin> getOverridePlugins();
+
     /**
      * Tworzy obiekt służący do komunikacji z zadaniem szyfrowania
      *

@@ -13,6 +13,7 @@ import meerkat.modules.serialization.ISerializationPlugin;
 
 import javax.swing.tree.TreeModel;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -27,6 +28,26 @@ class Core implements ICore, IPluginManager {
     private final List<IOverridePlugin> overridePlugins = new ArrayList<>();
     private IGuiPlugin guiPlugin;
     private IGuiImplementation guiImplementation;
+
+    @Override
+    public List<ISerializationPlugin> getSerializationPlugins() {
+        return Collections.unmodifiableList(serializationPlugins);
+    }
+
+    @Override
+    public List<IEncryptionPlugin> getEncryptionPlugins() {
+        return Collections.unmodifiableList(encryptionPlugins);
+    }
+
+    @Override
+    public List<IImportExportPlugin> getImportExportPlugins() {
+        return Collections.unmodifiableList(importExportPlugins);
+    }
+
+    @Override
+    public List<IOverridePlugin> getOverridePlugins() {
+        return Collections.unmodifiableList(overridePlugins);
+    }
 
     void registerPlugin(ISerializationPlugin p) {
         checkForPluginIdCollision(serializationPlugins, p);
