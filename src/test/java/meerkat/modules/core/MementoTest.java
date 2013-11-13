@@ -1,6 +1,7 @@
 package meerkat.modules.core;
 
 import meerkat.modules.encryption.IEncryptionPlugin;
+import meerkat.modules.import_export.IImportExportPlugin;
 import meerkat.modules.serialization.ISerializationPlugin;
 import org.junit.After;
 import org.junit.Before;
@@ -120,6 +121,24 @@ public class MementoTest {
 
     @Test
     public void testGetDecryptionPipeline() throws Exception {
+        IImportExportPlugin iep = createMock(IImportExportPlugin.class);
+        replay(iep);
 
+        IEncryptionPlugin encryptionPlugin = createMock(IEncryptionPlugin.class);
+        ISerializationPlugin serializationPlugin = createMock(ISerializationPlugin.class);
+        replay(encryptionPlugin, serializationPlugin);
+
+        IPluginManager pluginManager = createMock(IPluginManager.class);
+        expect(pluginManager.getEncryptionPluginForId(encryptionPluginId1)).andReturn(encryptionPlugin);
+        expect(pluginManager.getSerializationPluginForId(serializationPluginId1)).andReturn(serializationPlugin);
+        replay(pluginManager);
+
+        DecryptionPipeline decryptionPipeline = memento1.getDecryptionPipeline(iep, pluginManager);
+
+        assertEquals(iep, decryptionPipeline.getImportExportPlugin());
+        assertEquals(encryptionPlugin, decryptionPipeline.getEncryptionPlugin());
+        assertEquals(serializationPlugin, decryptionPipeline.getSerializationPlugin());
+
+        verify(iep, encryptionPlugin, serializationPlugin, pluginManager);
     }
 }
