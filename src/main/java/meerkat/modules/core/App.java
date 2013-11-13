@@ -2,6 +2,7 @@ package meerkat.modules.core;
 
 import meerkat.modules.encryption.xor.XorPlugin;
 import meerkat.modules.import_export.basic.BasicPlugin;
+import meerkat.modules.plausible_deniability.none.NoOverridePlugin;
 import meerkat.modules.serialization.simpleSerialization.SimpleSerializationPlugin;
 
 /**
@@ -16,6 +17,7 @@ public class App {
         core.registerPlugin(new XorPlugin());
         core.registerPlugin(new BasicPlugin());
         core.registerPlugin(new SimpleSerializationPlugin());
+        core.registerPlugin(new NoOverridePlugin());
     }
 
     public static void main(String[] args) {
