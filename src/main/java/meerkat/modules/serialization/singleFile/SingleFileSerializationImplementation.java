@@ -27,7 +27,7 @@ public class SingleFileSerializationImplementation implements ISerializationImpl
         // TODO implement 
         // metoda prepare powinna dostarczać dane od użytkownika dotyczące pliku wejściowego
         // tymczasowa ścieżka do pliku
-        filePath = "/home/tomasz/Desktop/test.JPG";
+        //filePath = "";
         return true;
     }
 

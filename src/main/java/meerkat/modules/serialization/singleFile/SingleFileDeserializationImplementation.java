@@ -37,7 +37,7 @@ public class SingleFileDeserializationImplementation implements IDeserialization
         // TODO implement 
         // metoda prepare powinna dostarczać dane od użytkownika dotyczące pliku wyjściowego
         // tymczasowa ścieżka pliku:
-        filePath = "/home/tomasz/Desktop/deserialized";
+        //filePath = "";
         return true;
     }
     
