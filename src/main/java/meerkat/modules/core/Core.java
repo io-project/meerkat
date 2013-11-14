@@ -95,8 +95,7 @@ class Core implements ICore, IPluginManager {
         }
 
         guiImplementation = guiPlugin.getImplementation(this);
-
-        System.out.println("Hello World!");         // TODO: usunąć tą linie
+        guiImplementation.start();
     }
 
     @Override

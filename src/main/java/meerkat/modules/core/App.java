@@ -1,9 +1,12 @@
 package meerkat.modules.core;
 
+import meerkat.modules.encryption.none.NoEncryptionPlugin;
 import meerkat.modules.encryption.xor.XorPlugin;
+import meerkat.modules.gui.simple.GuiPlugin;
 import meerkat.modules.import_export.basic.BasicPlugin;
 import meerkat.modules.plausible_deniability.none.NoOverridePlugin;
 import meerkat.modules.serialization.simpleSerialization.SimpleSerializationPlugin;
+import meerkat.modules.serialization.singleFile.SingleFileSerializationPlugin;
 
 /**
  * Ta klasa służy do uruchomienia aplikacji.
@@ -18,6 +21,9 @@ public class App {
         core.registerPlugin(new BasicPlugin());
         core.registerPlugin(new SimpleSerializationPlugin());
         core.registerPlugin(new NoOverridePlugin());
+        core.registerPlugin(new GuiPlugin());
+        core.registerPlugin(new SingleFileSerializationPlugin());
+        core.registerPlugin(new NoEncryptionPlugin());
     }
 
     public static void main(String[] args) {
