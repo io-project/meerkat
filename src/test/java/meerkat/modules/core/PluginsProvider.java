@@ -1,5 +1,7 @@
 package meerkat.modules.core;
 
+import meerkat.modules.IPlugin;
+import meerkat.modules.PluginNotFoundException;
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.encryption.IEncryptionImplementation;
 import meerkat.modules.encryption.IEncryptionPlugin;
@@ -13,18 +15,33 @@ import meerkat.modules.serialization.IDeserializationImplementation;
 import meerkat.modules.serialization.IDeserializationPreviewImplementation;
 import meerkat.modules.serialization.ISerializationImplementation;
 import meerkat.modules.serialization.ISerializationPlugin;
-import org.junit.Assert;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Callable;
 
-public class PluginsProvider {
+import static org.junit.Assert.assertEquals;
 
-    static ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength) {
-        return new ISerializationPlugin() {
+class PluginsProvider implements IPluginManager {
+
+    private final List<ISerializationPlugin> serializationPluginList = new ArrayList<>();
+    private final List<IEncryptionPlugin> encryptionPluginList = new ArrayList<>();
+    private final List<IImportExportPlugin> importExportPluginList = new ArrayList<>();
+    private final List<IOverridePlugin> overridePluginList = new ArrayList<>();
+    private int serializationPluginsCount = 0;
+    private int encryptionPluginsCount = 0;
+    private int importExportPluginsCount = 0;
+    private int overridePluginsCount = 0;
+
+    ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength) {
+        ISerializationPlugin result = new ISerializationPlugin() {
+            final ArrayList<Byte> serializedData = new ArrayList<>();
+            final String pluginId = "__builtin__testing_serialization" + serializationPluginsCount++;
+
             @Override
             public ISerializationImplementation getSerializationImplementation() {
                 return new ISerializationImplementation() {
@@ -44,8 +61,11 @@ public class PluginsProvider {
                     public void run() throws Exception {
                         ByteBuffer byteBuffer = ByteBuffer.allocate(dataLength);
                         for (int i = 0; i < dataLength; ++i) {
-                            byteBuffer.put(dataSource.call());
+                            byte d = dataSource.call();
+                            serializedData.add(d);
+                            byteBuffer.put(d);
                         }
+                        byteBuffer.flip();
                         channel.write(byteBuffer);
                     }
                 };
@@ -54,8 +74,11 @@ public class PluginsProvider {
             @Override
             public IDeserializationImplementation getDeserializationImplementation() {
                 return new IDeserializationImplementation() {
+                    ReadableByteChannel channel;
+
                     @Override
                     public <T extends ReadableByteChannel & InterruptibleChannel> void setInputChannel(T channel) {
+                        this.channel = channel;
                     }
 
                     @Override
@@ -65,6 +88,19 @@ public class PluginsProvider {
 
                     @Override
                     public void run() throws Exception {
+                        int i = 0;
+                        int j;
+                        ByteBuffer buffer = ByteBuffer.allocate(1024);
+                        int n;
+                        while ((n = channel.read(buffer)) != -1) {
+                            buffer.flip();
+                            for (j = 0; j < n; ++i, ++j) {
+                                byte d = buffer.get();
+                                assertEquals(d, (byte) serializedData.get(i));
+                            }
+                            buffer.clear();
+                        }
+                        serializedData.clear();
                     }
                 };
             }
@@ -81,13 +117,17 @@ public class PluginsProvider {
 
             @Override
             public String getUniquePluginId() {
-                return "__builtin__testing_serialization1";
+                return pluginId;
             }
         };
+        serializationPluginList.add(result);
+        return result;
     }
 
     IEncryptionPlugin getEncryptionPlugin() {
-        return new IEncryptionPlugin() {
+        IEncryptionPlugin result = new IEncryptionPlugin() {
+            final String pluginId = "__builtin_testing_encryption" + encryptionPluginsCount++;
+
             @Override
             public IEncryptionImplementation getEncryptionImplementation() {
                 return new IEncryptionImplementation() {
@@ -117,7 +157,7 @@ public class PluginsProvider {
                             if ((n = input.read(byteBuffer)) == -1)
                                 break;
                             byteBuffer.flip();
-                            Assert.assertEquals(n, output.write(byteBuffer));
+                            assertEquals(n, output.write(byteBuffer));
                             byteBuffer.clear();
                         }
                     }
@@ -126,7 +166,38 @@ public class PluginsProvider {
 
             @Override
             public IDecryptionImplementation getDecryptionImplementation() {
-                return null;  // TODO
+                return new IDecryptionImplementation() {
+                    ReadableByteChannel input;
+                    WritableByteChannel output;
+
+                    @Override
+                    public <T extends ReadableByteChannel & InterruptibleChannel> void setInputChannel(T channel) {
+                        input = channel;
+                    }
+
+                    @Override
+                    public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
+                        output = channel;
+                    }
+
+                    @Override
+                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                        return true;
+                    }
+
+                    @Override
+                    public void run() throws Exception {
+                        ByteBuffer byteBuffer = ByteBuffer.allocate(1024);
+                        while (true) {
+                            int n;
+                            if ((n = input.read(byteBuffer)) == -1)
+                                break;
+                            byteBuffer.flip();
+                            assertEquals(n, output.write(byteBuffer));
+                            byteBuffer.clear();
+                        }
+                    }
+                };
             }
 
             @Override
@@ -136,16 +207,44 @@ public class PluginsProvider {
 
             @Override
             public String getUniquePluginId() {
-                return "__builtin_testing_encryption1";
+                return pluginId;
             }
         };
+        encryptionPluginList.add(result);
+        return result;
     }
 
     IImportExportPlugin getImportExportPlugin() {
-        return new IImportExportPlugin() {
+        IImportExportPlugin result = new IImportExportPlugin() {
+            final ArrayList<Byte> exportedData = new ArrayList<>();
+            final String pluginId = "__builtin_testing_importexport" + importExportPluginsCount++;
+
             @Override
             public IImportImplementation getImportImplementation() {
-                return null;
+                return new IImportImplementation() {
+                    private WritableByteChannel channel;
+
+                    @Override
+                    public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
+                        this.channel = channel;
+                    }
+
+                    @Override
+                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                        return true;
+                    }
+
+                    @Override
+                    public void run() throws Exception {
+                        byte[] d = new byte[exportedData.size()];
+                        for (int i = 0; i < d.length; ++i) {
+                            d[i] = exportedData.get(i);
+                        }
+                        ByteBuffer byteBuffer = ByteBuffer.wrap(d);
+                        assertEquals(d.length, channel.write(byteBuffer));
+                        exportedData.clear();
+                    }
+                };
             }
 
             @Override
@@ -171,6 +270,11 @@ public class PluginsProvider {
                             if ((n = channel.read(byteBuffer)) == -1)
                                 break;
                             byteBuffer.flip();
+                            byte[] d = new byte[n];
+                            byteBuffer.get(d);
+                            for (int i = 0; i < n; ++i) {
+                                exportedData.add(d[i]);
+                            }
                             byteBuffer.clear();
                         }
                     }
@@ -184,13 +288,17 @@ public class PluginsProvider {
 
             @Override
             public String getUniquePluginId() {
-                return "__builtin_testing_importexport1";
+                return pluginId;
             }
         };
+        importExportPluginList.add(result);
+        return result;
     }
 
     IOverridePlugin getOverridePlugin() {
-        return new IOverridePlugin() {
+        IOverridePlugin result = new IOverridePlugin() {
+            final String pluginId = "__builtin_testing_override" + overridePluginsCount++;
+
             @Override
             public IOverrideImplementation getOverrideImplementation() {
                 return new IOverrideImplementation() {
@@ -212,8 +320,29 @@ public class PluginsProvider {
 
             @Override
             public String getUniquePluginId() {
-                return "__builtin_testing_override";
+                return pluginId;
             }
         };
+        overridePluginList.add(result);
+        return result;
+    }
+
+    private <T extends IPlugin> T getPluginForId(String id, List<T> plugins) throws PluginNotFoundException {
+        for (T p : plugins) {
+            if (p.getUniquePluginId().equals(id)) {
+                return p;
+            }
+        }
+        throw new PluginNotFoundException(id);
+    }
+
+    @Override
+    public ISerializationPlugin getSerializationPluginForId(String id) throws PluginNotFoundException {
+        return getPluginForId(id, serializationPluginList);
+    }
+
+    @Override
+    public IEncryptionPlugin getEncryptionPluginForId(String id) throws PluginNotFoundException {
+        return getPluginForId(id, encryptionPluginList);
     }
 }

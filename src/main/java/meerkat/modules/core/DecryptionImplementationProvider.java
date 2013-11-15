@@ -71,8 +71,12 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
                     }
 
                     importThread.join();
+                    importDecryptPipe.sink().close();
                     decryptThread.join();
+                    importDecryptPipe.source().close();
+                    decryptDeserialPipe.sink().close();
                     deserialThread.join();
+                    decryptDeserialPipe.source().close();
 
                     initializeNextState(parent.new FinishedState());
 

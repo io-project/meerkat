@@ -14,7 +14,7 @@ abstract class JobWithStates<T> implements IJob {
     private final IResultHandler<T> resultHandler;
     IState currentState;
     T result;
-    Throwable resultException;
+    Throwable resultThrowable;
 
     JobWithStates(IJobObserver handler, IResultHandler<T> resultHandler) {
         this.handler = handler;
@@ -44,12 +44,12 @@ abstract class JobWithStates<T> implements IJob {
                         // Jeżeli się nie udało - ktoś z zewnątrz zadecydował - wykonam jego decyzję (wykorzystane w abort)
                     }
                 }
-                if (resultException == null) {
+                if (resultThrowable == null) {
                     if (!isAborted()) {
                         resultHandler.handleResult(result);
                     }
                 } else {
-                    resultHandler.handleException(resultException);
+                    resultHandler.handleException(resultThrowable);
                 }
             }
         }).start();
@@ -132,15 +132,15 @@ abstract class JobWithStates<T> implements IJob {
 
     protected class FailedState extends DeadEndState {
 
-        private final Exception exception;
+        private final Throwable throwable;
 
-        public FailedState(Exception e) {
-            exception = e;
+        public FailedState(Throwable throwable) {
+            this.throwable = throwable;
         }
 
         @Override
         public IState start() {
-            resultException = exception;
+            resultThrowable = throwable;
             return super.start();
         }
 
@@ -159,8 +159,8 @@ abstract class JobWithStates<T> implements IJob {
     abstract class BranchingState implements IState, IAbortableState {
         IState nextState = null;
 
-        void abortBecauseOfFailure(Exception e) {
-            initializeNextState(new FailedState(e));
+        void abortBecauseOfFailure(Throwable t) {
+            initializeNextState(new FailedState(t));
         }
 
         void initializeNextState(IState nextState) {
@@ -189,6 +189,10 @@ abstract class JobWithStates<T> implements IJob {
                         runnable.run();
                     } catch (Exception e) {
                         abortBecauseOfFailure(e);
+                    } catch (Throwable t) {
+                        abortBecauseOfFailure(t);
+                        // To jest najprawdopodobniej błąd
+                        throw t;
                     }
                 }
             };
