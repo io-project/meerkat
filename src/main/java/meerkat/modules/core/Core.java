@@ -105,7 +105,7 @@ class Core implements ICore, IPluginManager {
     private void reportPluginOutOfOrder(PluginHealthStatus phs) {
         if (phs.messages.isEmpty())
             return;
-        System.err.println("Plugin " + phs.plugin.getUserVisibleName() + " o identyfikatorze " + phs.plugin.getUniquePluginId() + " jest niesprawny:");
+        System.err.println("Plugin >>>" + phs.plugin.getUserVisibleName() + "<<< o identyfikatorze >>>" + phs.plugin.getUniquePluginId() + "<<< jest niesprawny:");
         for (String message : phs.getMessages()) {
             System.err.println("\t" + message);
         }
