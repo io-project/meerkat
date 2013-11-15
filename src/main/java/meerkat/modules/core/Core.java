@@ -126,14 +126,21 @@ class Core implements ICore, IPluginManager {
         // Application entry point.
 
         if (guiPlugin == null) {
-            for (PluginHealthStatus phs : brokenPlugins)
-                reportPluginOutOfOrder(phs);
+            reportBrokenPlugins();
             throw new NoGuiPluginRegistered();
         }
 
         guiImplementation = guiPlugin.getImplementation(this);
+        if (guiImplementation == null) {
+            reportBrokenPlugins();
+        }
         // guiImplementation.showBrokenPlugins(brokenPlugins);   // TODO ta linia nie powinna być komentarzem
         guiImplementation.start();
+    }
+
+    private void reportBrokenPlugins() {
+        for (PluginHealthStatus phs : brokenPlugins)
+            reportPluginOutOfOrder(phs);
     }
 
     @Override
