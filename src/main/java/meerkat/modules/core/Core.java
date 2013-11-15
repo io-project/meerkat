@@ -26,6 +26,7 @@ class Core implements ICore, IPluginManager {
     private final List<IEncryptionPlugin> encryptionPlugins = new ArrayList<>();
     private final List<IImportExportPlugin> importExportPlugins = new ArrayList<>();
     private final List<IOverridePlugin> overridePlugins = new ArrayList<>();
+    private final List<PluginHealthStatus> brokenPlugins = new ArrayList<>();
     private IGuiPlugin guiPlugin;
     private IGuiImplementation guiImplementation;
 
@@ -50,23 +51,43 @@ class Core implements ICore, IPluginManager {
     }
 
     void registerPlugin(ISerializationPlugin p) {
-        checkForPluginIdCollision(serializationPlugins, p);
-        serializationPlugins.add(p);
+        PluginHealthStatus pluginHealthStatus = Plugins.getHealthStatus(p);
+        if (pluginHealthStatus.isReady()) {
+            checkForPluginIdCollision(serializationPlugins, p);
+            serializationPlugins.add(p);
+        } else {
+            brokenPlugins.add(pluginHealthStatus);
+        }
     }
 
     void registerPlugin(IEncryptionPlugin p) {
-        checkForPluginIdCollision(encryptionPlugins, p);
-        encryptionPlugins.add(p);
+        PluginHealthStatus pluginHealthStatus = Plugins.getHealthStatus(p);
+        if (pluginHealthStatus.isReady()) {
+            checkForPluginIdCollision(encryptionPlugins, p);
+            encryptionPlugins.add(p);
+        } else {
+            brokenPlugins.add(pluginHealthStatus);
+        }
     }
 
     void registerPlugin(IImportExportPlugin p) {
-        checkForPluginIdCollision(importExportPlugins, p);
-        importExportPlugins.add(p);
+        PluginHealthStatus pluginHealthStatus = Plugins.getHealthStatus(p);
+        if (pluginHealthStatus.isReady()) {
+            checkForPluginIdCollision(importExportPlugins, p);
+            importExportPlugins.add(p);
+        } else {
+            brokenPlugins.add(pluginHealthStatus);
+        }
     }
 
     void registerPlugin(IOverridePlugin p) {
-        checkForPluginIdCollision(overridePlugins, p);
-        overridePlugins.add(p);
+        PluginHealthStatus pluginHealthStatus = Plugins.getHealthStatus(p);
+        if (pluginHealthStatus.isReady()) {
+            checkForPluginIdCollision(overridePlugins, p);
+            overridePlugins.add(p);
+        } else {
+            brokenPlugins.add(pluginHealthStatus);
+        }
     }
 
     void registerPlugin(IGuiPlugin p) {
@@ -74,6 +95,20 @@ class Core implements ICore, IPluginManager {
             throw new PluginCollisionException("GUI module already registered");
         }
         guiPlugin = p;
+    }
+
+    /**
+     * Zgłasza w trybie awaryjnym nieprawidłową pracę pluginu.
+     *
+     * @param phs Informacja o stanie niedziałającego pluginu.
+     */
+    private void reportPluginOutOfOrder(PluginHealthStatus phs) {
+        if (phs.messages.isEmpty())
+            return;
+        System.err.println("Plugin " + phs.plugin.getUserVisibleName() + " o identyfikatorze " + phs.plugin.getUniquePluginId() + " jest niesprawny:");
+        for (String message : phs.getMessages()) {
+            System.err.println("\t" + message);
+        }
     }
 
     private void checkForPluginIdCollision(List<? extends IPlugin> pluginList, IPlugin plugin) {
@@ -91,10 +126,13 @@ class Core implements ICore, IPluginManager {
         // Application entry point.
 
         if (guiPlugin == null) {
+            for (PluginHealthStatus phs : brokenPlugins)
+                reportPluginOutOfOrder(phs);
             throw new NoGuiPluginRegistered();
         }
 
         guiImplementation = guiPlugin.getImplementation(this);
+        // guiImplementation.showBrokenPlugins(brokenPlugins);   // TODO ta linia nie powinna być komentarzem
         guiImplementation.start();
     }
 
