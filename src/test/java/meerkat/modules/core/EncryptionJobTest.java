@@ -6,17 +6,16 @@ import org.junit.Test;
 
 import java.util.concurrent.Callable;
 
-import static org.junit.Assert.assertTrue;
-
 /**
  * @author Maciej Poleski
  */
 public class EncryptionJobTest {
 
-    private final PluginsProvider pluginsProvider = new PluginsProvider();
+    private PluginsProvider pluginsProvider;
 
     @Before
     public void setUp() throws Exception {
+        pluginsProvider = new PluginsProvider();
     }
 
     @After
@@ -25,8 +24,9 @@ public class EncryptionJobTest {
     }
 
     @Test
-    public void test1() throws Exception {
-        EncryptionPipeline encryptionPipeline = new EncryptionPipeline(PluginsProvider.getSerializationPlugin(new Callable<Byte>() {
+    public void test1() throws Throwable {
+        final Throwable[] throwable = {null};
+        EncryptionPipeline encryptionPipeline = new EncryptionPipeline(pluginsProvider.getSerializationPlugin(new Callable<Byte>() {
             @Override
             public Byte call() throws Exception {
                 return 7;
@@ -44,7 +44,8 @@ public class EncryptionJobTest {
 
             @Override
             public void handleException(Throwable t) {
-                assertTrue(t.getMessage(), false);
+                throwable[0] = t;
+                handleResult(null);
             }
         });
         running[0] = true;
@@ -54,9 +55,7 @@ public class EncryptionJobTest {
                 wait();
             }
         }
-    }
-
-    interface IDataChecker<T> {
-        boolean check(T data);
+        if (throwable[0] != null)
+            throw throwable[0];
     }
 }
