@@ -119,7 +119,7 @@ class Core implements ICore, IPluginManager {
                 return p;
             }
         }
-        throw new PluginNotFoundException(id);
+        throw new PluginNotFoundException("Plugin not found: " + id);
     }
 
     @Override
