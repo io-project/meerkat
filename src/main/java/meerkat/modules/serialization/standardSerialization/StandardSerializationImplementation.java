@@ -1,7 +1,6 @@
-package meerkat.modules.serialization.simpleSerialization;
+package meerkat.modules.serialization.standardSerialization;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
@@ -16,7 +15,7 @@ import meerkat.modules.serialization.ISerializationImplementation;
  * @author Jakub Ciesla
  *
  */
-public class SimpleSerializationImplementation implements
+public class StandardSerializationImplementation implements
 		ISerializationImplementation {
 	
 	private WritableByteChannel outputChannel;

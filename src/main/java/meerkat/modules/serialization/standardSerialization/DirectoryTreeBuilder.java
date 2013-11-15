@@ -1,4 +1,4 @@
-package meerkat.modules.serialization.simpleSerialization;
+package meerkat.modules.serialization.standardSerialization;
 
 import java.io.File;
 import java.util.ArrayList;

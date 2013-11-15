@@ -1,4 +1,4 @@
-package meerkat.modules.serialization.simpleSerialization;
+package meerkat.modules.serialization.standardSerialization;
 
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
@@ -9,12 +9,10 @@ import java.io.ObjectInputStream;
 import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
-import java.util.Arrays;
-
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.serialization.IDeserializationImplementation;
 
-public class SimpleDeserializationImplementation implements
+public class StandardDeserializationImplementation implements
 		IDeserializationImplementation {
 
 	public String path;

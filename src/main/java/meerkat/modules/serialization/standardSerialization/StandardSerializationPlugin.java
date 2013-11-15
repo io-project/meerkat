@@ -1,11 +1,11 @@
-package meerkat.modules.serialization.simpleSerialization;
+package meerkat.modules.serialization.standardSerialization;
 
 import meerkat.modules.serialization.IDeserializationImplementation;
 import meerkat.modules.serialization.IDeserializationPreviewImplementation;
 import meerkat.modules.serialization.ISerializationImplementation;
 import meerkat.modules.serialization.ISerializationPlugin;
 
-public class SimpleSerializationPlugin implements ISerializationPlugin{
+public class StandardSerializationPlugin implements ISerializationPlugin{
 
 	private static final String name = "Simple Serialization";
 	
