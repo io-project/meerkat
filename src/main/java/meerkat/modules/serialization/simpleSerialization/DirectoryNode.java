@@ -3,6 +3,7 @@ package meerkat.modules.serialization.simpleSerialization;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +38,21 @@ public class DirectoryNode implements Serializable {
 
 		for (DirectoryNode node : content) {
 			node.DFSReadFiles(fileSender, outputChannel);
+		}
+
+	}
+	
+	public void DFSCreateFiles(FileCreater fileCreater,
+			ReadableByteChannel inputChannel, String root) throws IOException {
+
+		
+		if(!isDirectory) {
+			File file = new File(root + relativePath);
+			fileCreater.createFile(file, size, inputChannel);
+		}
+
+		for (DirectoryNode node : content) {
+			node.DFSCreateFiles(fileCreater, inputChannel, root);
 		}
 
 	}

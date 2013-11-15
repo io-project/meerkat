@@ -21,7 +21,7 @@ public class SimpleSerializationImplementation implements
 	
 	private WritableByteChannel outputChannel;
 	public String path;
-	private DirectoryTreeBuilder directoryTreeBuilder = new DirectoryTreeBuilder();
+	private final DirectoryTreeBuilder directoryTreeBuilder = new DirectoryTreeBuilder();
 	private final FileSender fileSender = new FileSender();
 
 	//Uzytkownik musi wybrac sciezke serializowanego pliku.

@@ -19,6 +19,8 @@ public class SimpleDeserializationImplementation implements
 
 	public String path;
 	private ReadableByteChannel inputChannel;
+	private final FileCreater fileCreater = new FileCreater();
+	private final DirectoryTreeCreater directoryTreeCreater = new DirectoryTreeCreater();
 
 	// Uzytkownik musi wybrac sciezke gdzie zdeserializuje sie plik.
 	@Override
@@ -30,13 +32,17 @@ public class SimpleDeserializationImplementation implements
 	@Override
 	public void run() throws Exception {
 
-		ByteBuffer buf = ByteBuffer.allocate(1024*1024*4);
+		ByteBuffer buf = ByteBuffer.allocate(4);
 
 		int bytesRead = inputChannel.read(buf);
 		byte[] bytes = buf.array();
-
-		byte[] subArray = Arrays.copyOfRange(bytes, 4, bytesToInt(bytes) + 4);
-		ByteArrayInputStream bis = new ByteArrayInputStream(subArray);
+		int treeSize = bytesToInt(bytes);
+		
+		buf = ByteBuffer.allocate(treeSize);
+		bytesRead = inputChannel.read(buf);
+		
+		bytes = buf.array();
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
 		ObjectInput in = null;
 		in = new ObjectInputStream(bis);
 		DirectoryNode node = (DirectoryNode) in.readObject();
@@ -45,7 +51,10 @@ public class SimpleDeserializationImplementation implements
 			path += File.separator;
 		}
 		
-		new DirectoryTreeCreater().createTree(node, path);
+		directoryTreeCreater.createTree(node, path);
+		
+		node.DFSCreateFiles(fileCreater, inputChannel, path);
+		
 	}
 	
 	public static int bytesToInt(byte[] int_bytes) throws IOException {
