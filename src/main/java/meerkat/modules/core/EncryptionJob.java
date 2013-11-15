@@ -156,8 +156,12 @@ class EncryptionJob extends JobWithStates<Void> {
 
                 // End
                 serializationThread.join();
+                serializationEncryptionPipe.sink().close();
                 encryptionThread.join();
+                serializationEncryptionPipe.source().close();
+                encryptionExportPipe.sink().close();
                 exportThread.join();
+                encryptionExportPipe.source().close();
 
                 synchronized (this) {
                     if (nextState == null) {
