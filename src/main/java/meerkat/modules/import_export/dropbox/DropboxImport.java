@@ -1,8 +1,8 @@
 package meerkat.modules.import_export.dropbox;
 
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.Channel;
+import java.nio.channels.Channels;
 import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.InterruptibleChannel;
@@ -11,68 +11,89 @@ import java.nio.channels.WritableByteChannel;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
+import meerkat.modules.gui.ILineEditValidator;
 import meerkat.modules.import_export.IImportImplementation;
 
+import com.dropbox.core.DbxClient;
+import com.dropbox.core.DbxEntry;
+
 /**
- * Podstawowy plugin importu - wczytanie z pliku.
+ * Wczytywanie plików z Dropboxa
  * 
- * @author Łukasz Kostrzewa
  */
 public class DropboxImport implements IImportImplementation {
 
-    private Channel outputChannel = null;
+	class CodeValidator implements ILineEditValidator {
+		@Override
+		public boolean validate(String label, String value) {
+			// TODO Auto-generated method stub
+			if((client = DropboxClient.authorize(value)) == null) return false;
+			return true;
+		}
+		
+	}
+	
+	private DbxClient client = null;
+
+    private WritableByteChannel outputChannel = null;
     private String filePath = null;
+    private String authorizeUrl = null;
+    private String targetPath = null;
     
     @Override
     public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
         this.outputChannel = channel;
     }
     
-    private IDialog buildDialog(IDialogBuilderFactory dialogBuilderFactory) {
-    	 // TODO implement 
-        // metoda tworzy okienko na potrzeby pluginu
+    private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory, String url) {
+        // metoda tworzy okienko do wpisania kodu
+    	// w celu zalogowania się na Dropboxa
     	IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
+    	idb.addLabel("Open this site: ")
+    		.addLabel(url)
+    		.addLineEdit("Enter a code: ", new CodeValidator());
+    	return idb.build();
+    }
+    
+    private IDialog buildDirectoryDialog(IDialogBuilderFactory dialogBuilderFactory) {
+        // metoda tworzy okienko do wybrania pliku
+    	IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
+    	idb.addDirectoryChooser("Choose a directory: ");
     	return idb.build();
     }
 
     @Override
     public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
-        // TODO implement 
-        // metoda prepare powinna dostarczać dane od użytkownika dotyczące pliku wejściowego
-        // tymczasowa ścieżka pliku:
+    	String response = DropboxClient.connect();
+    	while(response != DropboxClient.CONNECTED) {
+    		IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
+    		idb.exec();
+    		response = DropboxClient.connect();
+    	}
     	
-    	IDialog idb = buildDialog(dialogBuilderFactory);
-        filePath = "./exported";
-        return true;
+    	IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
+    	if(idb.exec()) {
+    		filePath = idb.getLineEditValue("Choose a directory: ");
+    		if(!filePath.startsWith("/")) filePath = "/" + filePath;
+    		return true;
+    	}
+        return false;
     }
 
     @Override
-    public void run() throws Exception {
-        
+	public void run() throws Exception {
+    	 
         if(filePath == null || outputChannel == null) throw new NullPointerException();
         
-        // throws FileNotFoundException or Permission denied
-        RandomAccessFile file = new RandomAccessFile(filePath, "r");
-        
         try {
-            FileChannel fileChannel = file.getChannel();
-            ByteBuffer buffer = ByteBuffer.allocate(32768);
-
-            int bytesRead = fileChannel.read(buffer);
-
-            while(bytesRead != -1) {
-                buffer.flip();
-                while(buffer.hasRemaining()) ((WritableByteChannel)outputChannel).write(buffer);
-                buffer.clear();
-                bytesRead = fileChannel.read(buffer);
-            }
+        	DbxEntry.File downloadedFile = client.getFile(filePath, null,
+        	        Channels.newOutputStream(outputChannel));
         }
-        catch(ClosedChannelException e) {
-            // Plik jest w trakcie wczytywania, ale operacja zostaje przerwana
-            throw e;
+        catch(Exception e) {
+            throw new Exception(e);
         }
         finally {
-            file.close();
+            
         }
-    }
+	}
 }
