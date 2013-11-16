@@ -4,6 +4,7 @@ import meerkat.modules.encryption.none.NoEncryptionPlugin;
 import meerkat.modules.encryption.xor.XorPlugin;
 import meerkat.modules.gui.simple.GuiPlugin;
 import meerkat.modules.import_export.basic.BasicPlugin;
+import meerkat.modules.import_export.dropbox.DropboxPlugin;
 import meerkat.modules.plausible_deniability.none.NoOverridePlugin;
 import meerkat.modules.serialization.singleFile.SingleFileSerializationPlugin;
 import meerkat.modules.serialization.standardSerialization.StandardSerializationPlugin;
@@ -24,6 +25,7 @@ public class App {
         core.registerPlugin(new GuiPlugin());
         core.registerPlugin(new SingleFileSerializationPlugin());
         core.registerPlugin(new NoEncryptionPlugin());
+        core.registerPlugin(new DropboxPlugin());
     }
 
     public static void main(String[] args) {
