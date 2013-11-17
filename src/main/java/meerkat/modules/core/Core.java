@@ -135,6 +135,7 @@ class Core implements ICore, IPluginManager {
             reportBrokenPlugins();
         }
         // guiImplementation.showBrokenPlugins(brokenPlugins);   // TODO ta linia nie powinna być komentarzem
+        reportBrokenPlugins();                                   // TODO a tej nie powinno być
         guiImplementation.start();
     }
 
