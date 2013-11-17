@@ -1,18 +1,18 @@
 package meerkat.modules.gui.validators.common;
 
 import meerkat.modules.gui.ILineEditValidator;
+import meerkat.modules.gui.validators.LineEditValidatorDecorator;
 
 /*
  * Validator sprawdzajacy czy dlugosc wprowadzonego napisu jest w przedziale [min, max)
  */
-public class LengthRangeFieldValidator implements ILineEditValidator {
+public class LengthRangeFieldValidator extends LineEditValidatorDecorator {
 	private int maxLength = Integer.MAX_VALUE;
 	private int minLength = 0;
 
-	public LengthRangeFieldValidator() {
-	}
-
-	public LengthRangeFieldValidator(int minLength, int maxLength) {
+	public LengthRangeFieldValidator(ILineEditValidator fieldValidator,
+			int minLength, int maxLength) {
+		super(fieldValidator);
 		this.minLength = minLength;
 		this.maxLength = maxLength;
 	}
@@ -33,8 +33,11 @@ public class LengthRangeFieldValidator implements ILineEditValidator {
 		return minLength;
 	}
 
-	@Override
 	public boolean validate(String label, String value) {
-		return minLength <= value.length() && value.length() < maxLength;
+		boolean b = true;
+		if (fieldValidator != null)
+			b = fieldValidator.validate(label, value);
+
+		return b && minLength <= value.length() && value.length() < maxLength;
 	}
 }

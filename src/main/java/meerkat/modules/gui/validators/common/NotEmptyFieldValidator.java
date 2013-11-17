@@ -1,14 +1,22 @@
 package meerkat.modules.gui.validators.common;
 
 import meerkat.modules.gui.ILineEditValidator;
+import meerkat.modules.gui.validators.LineEditValidatorDecorator;
 
 /**
  * Validator sprawdzajacy czy dane pole nie jest puste
  */
-public class NotEmptyFieldValidator implements ILineEditValidator {
+public class NotEmptyFieldValidator extends LineEditValidatorDecorator {
 
-	@Override
+	public NotEmptyFieldValidator(ILineEditValidator fieldValidator) {
+		super(fieldValidator);
+	}
+
 	public boolean validate(String label, String value) {
-		return value != null && !value.trim().isEmpty();
+		boolean b = true;
+		if (fieldValidator != null)
+			b = fieldValidator.validate(label, value);
+
+		return b && value != null && !value.trim().isEmpty();
 	}
 }
