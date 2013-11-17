@@ -120,7 +120,7 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
         @Override
         public IState start() {
             try {
-                Thread importThread = new Thread(wrapRunnable(importImplementation));
+                Thread importThread = new Thread(wrapRunnable(importImplementation), "Import Thread");
                 Pipe importDecryptPipe = SelectorProvider.provider().openPipe();
                 importImplementation.setOutputChannel(importDecryptPipe.sink());
                 importThread.start();

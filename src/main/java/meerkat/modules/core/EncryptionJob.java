@@ -134,10 +134,10 @@ class EncryptionJob extends JobWithStates<Void> {
                     implementationPack.encryption.setOutputChannel(encryptionExportPipe.sink());
                     implementationPack.export.setInputChannel(encryptionExportPipe.source());
                     // Thread
-                    serializationThread = new Thread(wrapRunnable(implementationPack.serialization));
-                    encryptionThread = new Thread(wrapRunnable(implementationPack.encryption));
-                    exportThread = new Thread(wrapRunnable(implementationPack.export));
-                    overrideThread = new Thread(wrapRunnable(implementationPack.override));
+                    serializationThread = new Thread(wrapRunnable(implementationPack.serialization), "Serialization Thread");
+                    encryptionThread = new Thread(wrapRunnable(implementationPack.encryption), "Encryption Thread");
+                    exportThread = new Thread(wrapRunnable(implementationPack.export), "Export Thread");
+                    overrideThread = new Thread(wrapRunnable(implementationPack.override), "Override Thread");
 
                     // Memento
                     Memento memento = new Memento(pipeline);

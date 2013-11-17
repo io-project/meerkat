@@ -58,9 +58,9 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
             public IState start() {
                 try {
                     synchronized (this) {
-                        decryptThread = new Thread(wrapRunnable(implementationPack.decryptionImplementation));
+                        decryptThread = new Thread(wrapRunnable(implementationPack.decryptionImplementation), "Decryption Thread");
                         decryptDeserialPipe = SelectorProvider.provider().openPipe();
-                        deserialThread = new Thread(wrapRunnable(implementationPack.deserializationImplementation));
+                        deserialThread = new Thread(wrapRunnable(implementationPack.deserializationImplementation), "Deserialization Thread");
 
                         implementationPack.decryptionImplementation.setInputChannel(importDecryptPipe.source());
                         implementationPack.decryptionImplementation.setOutputChannel(decryptDeserialPipe.sink());

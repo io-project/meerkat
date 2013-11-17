@@ -52,7 +52,7 @@ abstract class JobWithStates<T> implements IJob {
                     resultHandler.handleException(resultThrowable);
                 }
             }
-        }).start();
+        }, "Job Controller Thread").start();
     }
 
     void abort(IAbortedStateFactory abortedStateFactory) {
@@ -95,7 +95,7 @@ abstract class JobWithStates<T> implements IJob {
                 public void run() {
                     handler.update(JobWithStates.this, newState);
                 }
-            }).start();
+            }, "Job Observer Handler Thread").start();
         }
     }
 
