@@ -5,18 +5,35 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import meerkat.modules.encryption.IEncryptionImplementation;
+import meerkat.modules.gui.IDialog;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
 
-//TODO napisać testy
+
 public class XorEncryption implements IEncryptionImplementation {
 	
-	ReadableByteChannel readChannel;
-	WritableByteChannel writeChannel;
+	ReadableByteChannel readChannel = null;
+	WritableByteChannel writeChannel = null;
+	byte[] hashCode = null;
+	private XorAddition xorAddition = new XorAddition();
+	
+	public XorAddition getXorAddition(){
+		return xorAddition;
+	}
 	
 	@Override
 	public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
-		//TODO popracować nad tym wyświetlaniem
-		return true;
+		IDialogBuilder dialogBuilder = dialogBuilderFactory.newDialogBuilder();
+		String label_password = "Haslo";
+		String label_description = "Podaj haslo chroniace kodowanie:";
+		IDialog dialog = dialogBuilder
+				.addLabel(label_description)
+				.addPasswordEdit(label_password)
+				.build();
+		if(dialog.exec()){
+			return xorAddition.makeHashArrayFromPassword(dialog.getPasswordValue(label_password));
+		}
+		return false;
 	}
 
 	@Override
@@ -24,14 +41,17 @@ public class XorEncryption implements IEncryptionImplementation {
 		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 		ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
 		int read = -1;
+		hashCode = xorAddition.getHashCodeArray();
 		while((read = readChannel.read(readBuffer)) != -1){
+			readBuffer.flip();
 			for(int i=0; i<read; i++){
-				int b = readBuffer.getInt(); // Czy tutaj mogę użyć tak tego put Int
-				writeBuffer.putInt(b^i);
+				byte b = readBuffer.get();
+				byte xorByte = (byte)(b ^ hashCode[i%hashCode.length]);
+				writeBuffer.put(xorByte);
 			}
 			writeChannel.write(writeBuffer);
-			readBuffer.flip();
-			writeBuffer.flip();
+			readBuffer.clear();
+			writeBuffer.clear();
 		}
 	}
 
