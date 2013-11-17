@@ -37,8 +37,6 @@ public class DropboxImport implements IImportImplementation {
 
     private WritableByteChannel outputChannel = null;
     private String filePath = null;
-    private String authorizeUrl = null;
-    private String targetPath = null;
     
     @Override
     public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
