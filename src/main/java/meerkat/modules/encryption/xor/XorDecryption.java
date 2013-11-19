@@ -35,6 +35,14 @@ public class XorDecryption implements IDecryptionImplementation{
 		}
 		return false;
 	}
+	
+	private void code(ByteBuffer readBuffer, int read, ByteBuffer writeBuffer){
+		for(int i=0; i<read; i++){
+			byte b = readBuffer.get();
+			byte xorByte = (byte)(b ^ hashCode[i%hashCode.length]);
+			writeBuffer.put(xorByte);
+		}
+	}
 
 	@Override
 	public void run() throws Exception {
@@ -44,12 +52,8 @@ public class XorDecryption implements IDecryptionImplementation{
 		hashCode = xorAddition.getHashCodeArray();
 		while((read = readChannel.read(readBuffer)) != -1){
 			readBuffer.flip();
-			for(int i=0; i<read; i++){
-				byte b = readBuffer.get();
-				byte xorByte = (byte)(b ^ hashCode[i%hashCode.length]);
-				writeBuffer.put(xorByte);
-			}
-                        writeBuffer.flip();
+			code(readBuffer, read, writeBuffer);
+            writeBuffer.flip();
 			writeChannel.write(writeBuffer);
 			readBuffer.clear();
 			writeBuffer.clear();
