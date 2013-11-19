@@ -1,5 +1,6 @@
 package meerkat.modules.encryption.xor;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -40,6 +41,7 @@ public class XorEncryption implements IEncryptionImplementation {
 	public void run() throws Exception {
 		ByteBuffer readBuffer = ByteBuffer.allocate(1024);
 		ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+		
 		int read = -1;
 		hashCode = xorAddition.getHashCodeArray();
 		while((read = readChannel.read(readBuffer)) != -1){
