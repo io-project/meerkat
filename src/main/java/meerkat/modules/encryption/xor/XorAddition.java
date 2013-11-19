@@ -21,7 +21,7 @@ public class XorAddition {
 	 * @return byte[] that represent this password as hash sha512
 	 */
 	public static byte[] makeByteArrayFromPassword(byte[] password){
-		return  DigestUtils.sha( password );
+		return  DigestUtils.sha512( password );
 	}
 	
 	/**
