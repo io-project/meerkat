@@ -27,6 +27,7 @@ import meerkat.modules.gui.IPasswordValidator;
  */
 public class DialogBuilder implements IDialogBuilder {
     
+    final private UI ui;
     final private JPanel panel;
     final private GroupLayout layout;
     final private ParallelGroup hGroup;
@@ -36,8 +37,9 @@ public class DialogBuilder implements IDialogBuilder {
     final LinkedList<DialogField> directoryFields;
     final LinkedList<DialogField> lineEditFields;  
             
-    public DialogBuilder(JPanel panel) {
-        this.panel = panel;
+    public DialogBuilder(UI ui) {
+        this.ui = ui;
+        panel = ui.getDialogPanel();
         layout = new GroupLayout(panel);
         hGroup = layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING);
         vGroup = layout.createSequentialGroup().addContainerGap();
@@ -47,9 +49,15 @@ public class DialogBuilder implements IDialogBuilder {
         passwordFields = new LinkedList<>();
     }
     
-    void clearPanel() {
+    void removeDialog() {
         this.panel.removeAll(); 
         this.panel.updateUI();
+        ui.enableComponents();
+    }
+    
+    void displayDialog() {
+        panel.setLayout(layout);
+        ui.disableComponents();
     }
     
     @Override
@@ -245,7 +253,7 @@ public class DialogBuilder implements IDialogBuilder {
     
     @Override
     public IDialog build() {
-        panel.setLayout(layout);
+        
         Dialog dialog = new Dialog(this);
         
         initButtons(dialog);

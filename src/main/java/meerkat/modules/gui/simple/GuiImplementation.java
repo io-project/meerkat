@@ -34,11 +34,9 @@ public class GuiImplementation implements IGuiImplementation {
     public IDialogBuilderFactory getDialogBuilderFactory() {
         return new IDialogBuilderFactory() {
             
-            JPanel dialogPanel = ui.getDialogPanel();
-            
             @Override
             public IDialogBuilder newDialogBuilder() {
-                return new DialogBuilder(dialogPanel);
+                return new DialogBuilder(ui);
             }
             
         };

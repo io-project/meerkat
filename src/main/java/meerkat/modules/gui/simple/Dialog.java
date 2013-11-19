@@ -39,8 +39,9 @@ public final class Dialog implements IDialog {
     
     @Override
     public boolean exec() {
+        dialogBuilder.displayDialog();
         acquire();
-        dialogBuilder.clearPanel();
+        dialogBuilder.removeDialog();
         return state;
     }
 
