@@ -49,6 +49,7 @@ public class XorDecryption implements IDecryptionImplementation{
 				byte xorByte = (byte)(b ^ hashCode[i%hashCode.length]);
 				writeBuffer.put(xorByte);
 			}
+                        writeBuffer.flip();
 			writeChannel.write(writeBuffer);
 			readBuffer.clear();
 			writeBuffer.clear();

@@ -51,6 +51,7 @@ public class XorEncryption implements IEncryptionImplementation {
 				byte xorByte = (byte)(b ^ hashCode[i%hashCode.length]);
 				writeBuffer.put(xorByte);
 			}
+                        writeBuffer.flip();
 			writeChannel.write(writeBuffer);
 			readBuffer.clear();
 			writeBuffer.clear();
