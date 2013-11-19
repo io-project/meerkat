@@ -7,6 +7,7 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.FileChannel;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.WritableByteChannel;
+import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.import_export.IImportImplementation;
 
@@ -27,11 +28,12 @@ public class BasicImport implements IImportImplementation {
 
     @Override
     public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
-        // TODO implement 
-        // metoda prepare powinna dostarczać dane od użytkownika dotyczące pliku wejściowego
-        // tymczasowa ścieżka pliku:
-        filePath = "./exported";
-        return true;
+        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:").build();
+        if(d.exec()) {
+            filePath = d.getFileValue("Podaj ścieżkę pliku:").getAbsolutePath();
+            return true;
+        }
+        return false;
     }
 
     @Override
