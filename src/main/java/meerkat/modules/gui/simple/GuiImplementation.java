@@ -1,6 +1,8 @@
 package meerkat.modules.gui.simple;
 
+import javax.swing.JPanel;
 import meerkat.modules.core.ICore;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.gui.IGuiImplementation;
 
@@ -10,26 +12,36 @@ import meerkat.modules.gui.IGuiImplementation;
  */
 public class GuiImplementation implements IGuiImplementation {
 
-    private final ICore core;
-    
-    public GuiImplementation(ICore core) {
-        this.core = core;
-    }
+    private final UI ui;
 
+    public GuiImplementation(ICore core) {
+        setLookAndFeel();
+        this.ui = new UI(core);
+    }
+    
     @Override
     public void start() {
-        setLookAndFeel();
+        
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new UI(core).setVisible(true);
+                ui.setVisible(true);
             }
         });
     }
 
     @Override
     public IDialogBuilderFactory getDialogBuilderFactory() {
-         return new DialogBuilderFactory();
+        return new IDialogBuilderFactory() {
+            
+            JPanel dialogPanel = ui.getDialogPanel();
+            
+            @Override
+            public IDialogBuilder newDialogBuilder() {
+                return new DialogBuilder(dialogPanel);
+            }
+            
+        };
     }
 
     private void setLookAndFeel() {
