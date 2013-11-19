@@ -80,8 +80,6 @@ class DecryptionPreviewImplementationProvider implements IDecryptionImplementati
                         deserialThread.start();
                     }
 
-                    importThread.join();
-                    decryptThread.join();
                     deserialThread.join();
 
                     synchronized (this) {
