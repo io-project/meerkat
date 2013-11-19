@@ -22,7 +22,7 @@ import java.nio.channels.spi.SelectorProvider;
  */
 class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
 
-    private final IDialogBuilderFactory dialogBuilderFactory;
+    private final IDialogBuilderFactory<?> dialogBuilderFactory;
     private final IPluginManager pluginManager;
     private final IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider;
     private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
@@ -39,7 +39,7 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
      * @param handler              Handler na który będzie zgłaszana zmiana stanu zadania
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
      */
-    public DecryptionJobTemplate(IImportExportPlugin importPlugin, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory, IPluginManager pluginManager, IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider, IResultHandler<U> resultHandler) {
+    public DecryptionJobTemplate(IImportExportPlugin importPlugin, IJobObserver handler, IDialogBuilderFactory<?> dialogBuilderFactory, IPluginManager pluginManager, IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider, IResultHandler<U> resultHandler) {
         super(handler, resultHandler);
         this.dialogBuilderFactory = dialogBuilderFactory;
         this.pluginManager = pluginManager;
@@ -47,7 +47,7 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
         this.currentState = new ReadyState(importPlugin);
     }
 
-    IDialogBuilderFactory getDialogBuilderFactory() {
+    IDialogBuilderFactory<?> getDialogBuilderFactory() {
         return dialogBuilderFactory;
     }
 

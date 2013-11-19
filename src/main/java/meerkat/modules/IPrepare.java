@@ -16,5 +16,5 @@ public interface IPrepare {
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych do wykorzystania w celu zdobycia informacji.
      * @return true - Jeżeli przygotowanie zakończyło się powodzeniem, false - jeżeli proces został anulowany
      */
-    boolean prepare(IDialogBuilderFactory dialogBuilderFactory);
+    boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory);
 }

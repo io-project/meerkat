@@ -53,7 +53,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -82,7 +82,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -145,7 +145,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -181,7 +181,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -230,7 +230,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -258,7 +258,7 @@ class PluginsProvider implements IPluginManager {
                     }
 
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 
@@ -303,7 +303,7 @@ class PluginsProvider implements IPluginManager {
             public IOverrideImplementation getOverrideImplementation() {
                 return new IOverrideImplementation() {
                     @Override
-                    public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
                         return true;
                     }
 

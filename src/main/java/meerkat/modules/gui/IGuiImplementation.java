@@ -15,5 +15,5 @@ public interface IGuiImplementation {
     /**
      * Zwraca fabrykę budowniczych okien dialogowych.
      */
-    IDialogBuilderFactory getDialogBuilderFactory();
+    IDialogBuilderFactory<?> getDialogBuilderFactory();
 }

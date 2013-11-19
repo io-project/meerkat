@@ -3,6 +3,7 @@ package meerkat.modules.serialization;
 import meerkat.modules.IPrepare;
 import meerkat.modules.core.IResultCallback;
 
+import javax.swing.tree.TreeModel;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 
@@ -34,5 +35,5 @@ public interface IDeserializationPreviewImplementation extends IPrepare, meerkat
      * @param resultCallback Callback który powinien zostać wywołany po zakończeniu operacji z argumentem będącym
      *                       jej rezultatem.
      */
-    void setResultCallback(IResultCallback resultCallback);
+    void setResultCallback(IResultCallback<TreeModel> resultCallback);
 }

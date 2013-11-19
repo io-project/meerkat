@@ -23,7 +23,7 @@ class EncryptionJob extends JobWithStates<Void> {
 
     private final EncryptionPipeline pipeline;
     private final ImplementationPack implementationPack;
-    private final IDialogBuilderFactory dialogBuilderFactory;
+    private final IDialogBuilderFactory<?> dialogBuilderFactory;
     private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
         @Override
         public IState newAbortedState() {
@@ -39,7 +39,7 @@ class EncryptionJob extends JobWithStates<Void> {
      * @param dialogBuilderFactory Fabryka budowniczych okien dialogowych na potrzeby pluginów.
      * @param resultHandler        Handler do zgłaszania rezultatu.
      */
-    public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory dialogBuilderFactory, IResultHandler<Void> resultHandler) {
+    public EncryptionJob(EncryptionPipeline pipeline, IJobObserver handler, IDialogBuilderFactory<?> dialogBuilderFactory, IResultHandler<Void> resultHandler) {
         super(handler, resultHandler);
         this.pipeline = pipeline;
         this.implementationPack = new ImplementationPack(pipeline);

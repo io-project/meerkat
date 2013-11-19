@@ -41,7 +41,7 @@ public class DecryptionJobTest {
             @Override
             public void handleResult(Void result) {
 
-                DecryptionJobTemplate decryptionJob = new DecryptionJobTemplate<>(encryptionPipeline.getImportExportPlugin(), null, null, pluginsProvider, new DecryptionImplementationProvider(), new IResultHandler<Void>() {
+                IJob decryptionJob = new DecryptionJobTemplate<>(encryptionPipeline.getImportExportPlugin(), null, null, pluginsProvider, new DecryptionImplementationProvider(), new IResultHandler<Void>() {
                     @Override
                     public void handleResult(Void result) {
                         synchronized (DecryptionJobTest.this) {
