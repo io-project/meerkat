@@ -39,9 +39,9 @@ public class MockWriteableChannel implements WritableByteChannel, InterruptibleC
 
 	@Override
 	public int write(ByteBuffer src) throws IOException {
-		System.arraycopy(src.array(), 0, got, position, src.position());
-		position += src.position();
-		return src.position();
+		System.arraycopy(src.array(), src.position(), got, position, src.limit());
+		position += src.limit();
+		return src.limit();
 	}
 
 }
