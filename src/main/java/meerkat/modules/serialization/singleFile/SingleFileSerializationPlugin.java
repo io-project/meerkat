@@ -1,5 +1,9 @@
 package meerkat.modules.serialization.singleFile;
 
+import java.nio.channels.InterruptibleChannel;
+import java.nio.channels.ReadableByteChannel;
+import meerkat.modules.core.IResultCallback;
+import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.serialization.IDeserializationImplementation;
 import meerkat.modules.serialization.IDeserializationPreviewImplementation;
 import meerkat.modules.serialization.ISerializationImplementation;
@@ -25,8 +29,29 @@ public class SingleFileSerializationPlugin implements ISerializationPlugin {
 
     @Override
     public IDeserializationPreviewImplementation getDeserializationPreviewImplementation() {
-        // TODO Auto-generated method stub
-	return null;
+        return new IDeserializationPreviewImplementation(){
+
+            @Override
+            public <T extends ReadableByteChannel & InterruptibleChannel > void setInputChannel(T channel) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void setResultCallback(IResultCallback resultCallback) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public boolean prepare(IDialogBuilderFactory dialogBuilderFactory) {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+
+            @Override
+            public void run() throws Exception {
+                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            }
+            
+        };
     }
 
     @Override
