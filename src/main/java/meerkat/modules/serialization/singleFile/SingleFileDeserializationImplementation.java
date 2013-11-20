@@ -9,8 +9,6 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import meerkat.modules.gui.IFileValidator;
 
 /**
@@ -38,6 +36,7 @@ public class SingleFileDeserializationImplementation implements IDeserialization
         IFileValidator v = new IFileValidator() {
             @Override
             public boolean validate(String label, File value) {
+                if(value.isDirectory()) return false;
                 if(value.canWrite()) return true;
                 try {
                     if(value.createNewFile()) return true;
