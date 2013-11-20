@@ -1,5 +1,6 @@
 package meerkat.modules.import_export.basic;
 
+import java.io.File;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.import_export.IImportImplementation;
@@ -7,6 +8,7 @@ import meerkat.modules.import_export.IImportImplementation;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import meerkat.modules.gui.IFileValidator;
 
 /**
  * Podstawowy plugin importu - wczytanie z pliku.
@@ -16,7 +18,7 @@ import java.nio.channels.*;
 public class BasicImport implements IImportImplementation {
 
     private Channel outputChannel = null;
-    private String filePath = null;
+    private File inputFile = null;
 
     @Override
     public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
@@ -25,10 +27,20 @@ public class BasicImport implements IImportImplementation {
 
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:").build();
-        if (d.exec()) {
-            filePath = d.getFileValue("Podaj ścieżkę pliku:").getAbsolutePath();
-            return true;
+       
+        IFileValidator v = new IFileValidator() {
+            @Override
+            public boolean validate(String label, File value) {
+                return  value.exists() && value.isFile() && value.canRead();
+            }
+        };
+        
+        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
+        while(d.exec()) {
+            if(d.validate()) {
+                inputFile = d.getFileValue("Podaj ścieżkę pliku:");
+                return true;
+            }
         }
         return false;
     }
@@ -36,10 +48,9 @@ public class BasicImport implements IImportImplementation {
     @Override
     public void run() throws Exception {
 
-        if (filePath == null || outputChannel == null) throw new NullPointerException();
+        if(inputFile == null || outputChannel == null) throw new NullPointerException();
 
-        // throws FileNotFoundException or Permission denied
-        RandomAccessFile file = new RandomAccessFile(filePath, "r");
+        RandomAccessFile file = new RandomAccessFile(inputFile, "r");
 
         try {
             FileChannel fileChannel = file.getChannel();

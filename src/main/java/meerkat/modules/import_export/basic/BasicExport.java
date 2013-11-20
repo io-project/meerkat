@@ -5,9 +5,11 @@ import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.import_export.IExportImplementation;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import meerkat.modules.gui.IFileValidator;
 
 /**
  * Podstawowy plugin exportu - zapis do pliku.
@@ -17,10 +19,9 @@ import java.nio.channels.*;
 public class BasicExport implements IExportImplementation {
 
     private Channel inputChannel = null;
-    private String filePath = null;
+    private File outputFile = null;
 
-    private boolean removeFile(String path) {
-        File f = new File(path);
+    private boolean removeFile(File f) {
         boolean success = true;
         if (f.exists()) success = f.delete();
         return success;
@@ -33,10 +34,25 @@ public class BasicExport implements IExportImplementation {
 
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę zapisu:").build();
-        if (d.exec()) {
-            filePath = d.getFileValue("Podaj ścieżkę zapisu:").getAbsolutePath();
-            return true;
+        
+        IFileValidator v = new IFileValidator() {
+            @Override
+            public boolean validate(String label, File value) {
+                if(value.isDirectory()) return false;
+                if(value.canWrite()) return true;
+                try {
+                    if(value.createNewFile()) return true;
+                } catch (IOException ex) {}
+                return false;
+            }
+        };
+        
+        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
+        while(d.exec()) {
+            if(d.validate()) {
+                outputFile = d.getFileValue("Podaj ścieżkę pliku:");
+                return true;
+            }
         }
         return false;
     }
@@ -44,10 +60,9 @@ public class BasicExport implements IExportImplementation {
     @Override
     public void run() throws Exception {
 
-        if (filePath == null || inputChannel == null) throw new NullPointerException();
+        if(outputFile == null || inputChannel == null) throw new NullPointerException();
 
-        // throws FileNotFoundException or Permission denied
-        RandomAccessFile file = new RandomAccessFile(filePath, "rw");
+        RandomAccessFile file = new RandomAccessFile(outputFile, "rw");
 
         try {
             FileChannel fileChannel = file.getChannel();
@@ -63,7 +78,7 @@ public class BasicExport implements IExportImplementation {
             }
         } catch (ClosedChannelException e) {
             // Plik jest stworzony (niekompletny), ale operacja zostaje przerwana
-            removeFile(filePath);
+            removeFile(outputFile);
             throw e;
         } finally {
             file.close();
