@@ -1,6 +1,8 @@
 package meerkat.modules.gui.simple;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import meerkat.modules.gui.IDialog;
 
@@ -44,41 +46,65 @@ public final class Dialog implements IDialog {
         dialogBuilder.removeDialog();
         return state;
     }
-
+    
+    @Override
+    public boolean validate() {
+        
+        Map<String,Object> fields = new HashMap<>();
+        
+        for(DialogDirectoryField d : dialogBuilder.directoryFields) {
+            fields.put(d.label, d.getValue());
+            if(d.validate() == false) return false;
+        }
+        
+        for(DialogFileField d : dialogBuilder.fileFields) {
+            fields.put(d.label, d.getValue());
+            if(d.validate() == false) return false; 
+        }
+        
+        for(DialogPasswordField d : dialogBuilder.passwordFields) {
+            fields.put(d.label, d.getValue());
+            if(d.validate() == false) return false; 
+        }
+        
+        for(DialogLineEditField d : dialogBuilder.lineEditFields) {
+            fields.put(d.label, d.getValue());
+            if(d.validate() == false) return false; 
+        }
+        if(dialogBuilder.validator != null) return dialogBuilder.validator.validate(fields);
+        return true;
+    }
+    
     @Override
     public String getLineEditValue(String label) {
-        String result = "";
-        for(DialogField d : dialogBuilder.lineEditFields) {
-            if(d.getLabel().equals(label)) result = d.getValue();
+        for(DialogLineEditField d : dialogBuilder.lineEditFields) {
+            if(d.label.equals(label)) return d.getValue();
         }
-        return result;
+        return null;
     }
 
     @Override
     public char[] getPasswordValue(String label) {
-        String result = "";
-        for(DialogField d : dialogBuilder.passwordFields) {
-            if(d.getLabel().equals(label)) result = d.getValue();
+        for(DialogPasswordField d : dialogBuilder.passwordFields) {
+            if(d.label.equals(label)) return d.getValue();
         }
-        return result.toCharArray();
+        return null;
     }
 
     @Override
     public File getFileValue(String label) {
-        String result = "";
-        for(DialogField d : dialogBuilder.fileFields) {
-            if(d.getLabel().equals(label)) result = d.getValue();
+        for(DialogFileField d : dialogBuilder.fileFields) {
+            if(d.label.equals(label)) return d.getValue();
         }
-        return new File(result);
+        return null;
     }
 
     @Override
     public File getDirectoryValue(String label) {
-        String result = "";
-        for(DialogField d : dialogBuilder.directoryFields) {
-            if(d.getLabel().equals(label)) result = d.getValue();
+        for(DialogDirectoryField d : dialogBuilder.directoryFields) {
+            if(d.label.equals(label)) return d.getValue();
         }
-        return new File(result);
+        return null;
     }
     
 }

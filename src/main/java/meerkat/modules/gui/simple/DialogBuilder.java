@@ -1,5 +1,6 @@
 package meerkat.modules.gui.simple;
 
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
@@ -32,10 +33,11 @@ public class DialogBuilder implements IDialogBuilder {
     final private GroupLayout layout;
     final private ParallelGroup hGroup;
     final private SequentialGroup vGroup;
-    final LinkedList<DialogField> passwordFields;
-    final LinkedList<DialogField> fileFields;
-    final LinkedList<DialogField> directoryFields;
-    final LinkedList<DialogField> lineEditFields;  
+    final LinkedList<DialogPasswordField> passwordFields;
+    final LinkedList<DialogFileField> fileFields;
+    final LinkedList<DialogDirectoryField> directoryFields;
+    final LinkedList<DialogLineEditField> lineEditFields;
+    IDialogValidator validator;
             
     public DialogBuilder(UI ui) {
         this.ui = ui;
@@ -47,16 +49,22 @@ public class DialogBuilder implements IDialogBuilder {
         fileFields = new LinkedList<>();
         directoryFields = new LinkedList<>();
         passwordFields = new LinkedList<>();
+        validator = null;
     }
     
     void removeDialog() {
-        this.panel.removeAll(); 
-        this.panel.updateUI();
+        
+        for(Component c : panel.getComponents()) {
+            c.setVisible(false);
+        }
         ui.enableComponents();
     }
     
     void displayDialog() {
         panel.setLayout(layout);
+        for(Component c : panel.getComponents()) {
+            c.setVisible(true);
+        }
         ui.disableComponents();
     }
     
@@ -87,7 +95,7 @@ public class DialogBuilder implements IDialogBuilder {
             .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         ).addGap(18, 18, 18);
         
-        lineEditFields.add(new DialogField(label,x,validator));
+        lineEditFields.add(new DialogLineEditField(label,x,validator));
         return this;
     }
 
@@ -106,7 +114,7 @@ public class DialogBuilder implements IDialogBuilder {
             .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
         ).addGap(18, 18, 18);
         
-        passwordFields.add(new DialogField(label,x,validator));
+        passwordFields.add(new DialogPasswordField(label,x,validator));
         return this;
     }
 
@@ -136,7 +144,7 @@ public class DialogBuilder implements IDialogBuilder {
             .addComponent(b)
         ).addGap(18, 18, 18);
         
-        fileFields.add(new DialogField(label,x,validator));
+        fileFields.add(new DialogFileField(label,x,validator));
         return this;
     }
 
@@ -166,7 +174,7 @@ public class DialogBuilder implements IDialogBuilder {
             .addComponent(b)
         ).addGap(18, 18, 18);
                 
-        directoryFields.add(new DialogField(label,x,validator));
+        directoryFields.add(new DialogDirectoryField(label,x,validator));
         return this;
     }
 
@@ -192,6 +200,7 @@ public class DialogBuilder implements IDialogBuilder {
 
     @Override
     public IDialogBuilder setValidator(IDialogValidator validator) {
+        this.validator = validator;
         return this;
     }
 
