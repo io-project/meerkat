@@ -17,73 +17,91 @@ import java.nio.channels.WritableByteChannel;
  */
 public class DropboxImport implements IImportImplementation {
 
-    class CodeValidator implements ILineEditValidator {
-        @Override
-        public boolean validate(String label, String value) {
-            // TODO Auto-generated method stub
-            if ((client = DropboxClient.authorize(value)) == null) return false;
-            return true;
-        }
+	class CodeValidator implements ILineEditValidator {
+		@Override
+		public boolean validate(String label, String value) {
+			// TODO Auto-generated method stub
+			if ((client = DropboxClient.authorize(value)) == null)
+				return false;
+			return true;
+		}
 
-    }
+	}
 
-    private DbxClient client = null;
+	private DbxClient client = null;
 
-    private WritableByteChannel outputChannel = null;
-    private String filePath = null;
+	private WritableByteChannel outputChannel = null;
+	private String filePath = null;
 
-    @Override
-    public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
-        this.outputChannel = channel;
-    }
+	@Override
+	public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(
+			T channel) {
+		this.outputChannel = channel;
+	}
 
-    private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory, String url) {
-        // metoda tworzy okienko do wpisania kodu
-        // w celu zalogowania się na Dropboxa
-        IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-        idb.addLabel("Open this site: ")
-                .addLabel(url)
-                .addLineEdit("Enter a code: ", new CodeValidator());
-        return idb.build();
-    }
+	private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory,
+			String url) {
+		// metoda tworzy okienko do wpisania kodu
+		// w celu zalogowania się na Dropboxa
+		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
+		idb.addHyperLink("Obtain an authentication code at dropbox website",
+				url).addLineEdit("Enter a code: ", new CodeValidator());
+		return idb.build();
+	}
 
-    private IDialog buildDirectoryDialog(IDialogBuilderFactory dialogBuilderFactory) {
-        // metoda tworzy okienko do wybrania pliku
-        IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-        idb.addDirectoryChooser("Choose a directory: ");
-        return idb.build();
-    }
+	private IDialog buildDirectoryDialog(
+			IDialogBuilderFactory dialogBuilderFactory) {
+		// metoda tworzy okienko do wybrania pliku
+		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
+		idb.addLineEdit("Choose a directory: ", new ILineEditValidator() {
 
-    @Override
-    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-        String response = DropboxClient.connect();
-        while (response != DropboxClient.CONNECTED) {
-            IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
-            idb.exec();
-            response = DropboxClient.connect();
-        }
+			@Override
+			public boolean validate(String label, String value) {
+				return value != null && value.length() > 0;
+			}
+		});
+		// idb.addDirectoryChooser("Choose a directory: ");
+		return idb.build();
+	}
 
-        IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
-        if (idb.exec()) {
-            filePath = idb.getLineEditValue("Choose a directory: ");
-            if (!filePath.startsWith("/")) filePath = "/" + filePath;
-            return true;
-        }
-        return false;
-    }
+	@Override
+	public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
+		String response = DropboxClient.connect();
+		if (response != DropboxClient.CONNECTED) {
+			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
+			while (idb.exec()) {
+				if (idb.validate()) {
+					response = DropboxClient.connect();
+					break;
+				}
+			}
+		}
 
-    @Override
-    public void run() throws Exception {
+		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
+		while (idb.exec()) {
+			if (idb.validate()) {
+				filePath = idb.getLineEditValue("Choose a directory: ");
+				if (!filePath.startsWith("/"))
+					filePath = "/" + filePath;
+				return true;
+			}
+		}
+		return false;
+	}
 
-        if (filePath == null || outputChannel == null) throw new NullPointerException();
+	@Override
+	public void run() throws Exception {
 
-        try {
-            DbxEntry.File downloadedFile = client.getFile(filePath, null,
-                    Channels.newOutputStream(outputChannel));
-        } catch (Exception e) {
-            throw new Exception(e);
-        } finally {
+		if (filePath == null || outputChannel == null)
+			throw new NullPointerException();
 
-        }
-    }
+		try {
+			DbxEntry.File downloadedFile = client.getFile(filePath, null,
+					Channels.newOutputStream(outputChannel));
+		} catch (Exception e) {
+			throw new Exception(e);
+		} finally {
+
+		}
+	}
 }

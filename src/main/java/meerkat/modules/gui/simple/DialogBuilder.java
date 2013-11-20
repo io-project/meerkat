@@ -1,8 +1,15 @@
 package meerkat.modules.gui.simple;
 
 import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 import javax.swing.GroupLayout;
 import static javax.swing.GroupLayout.DEFAULT_SIZE;
@@ -71,6 +78,31 @@ public class DialogBuilder implements IDialogBuilder {
     @Override
     public IDialogBuilder addLabel(String label) {
         JLabel l = new JLabel(label);
+        hGroup.addGroup(layout.createSequentialGroup()
+            .addComponent(l)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+                
+        vGroup.addComponent(l).addGap(18, 18, 18);
+        return this;
+    }
+    
+    @Override
+    public IDialogBuilder addHyperLink(String label, final String url) {
+        JLabel l = new JLabel(label);
+        l.setText("<html><a href=\"\">" + label + "</a></html>");
+		l.setCursor(new Cursor(Cursor.HAND_CURSOR));
+		l.addMouseListener(new MouseAdapter() {
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				try {
+					Desktop.getDesktop().browse(new URI(url));
+				} catch (URISyntaxException | IOException ex) {
+					// It looks like there's a problem
+				}
+			}
+		});
+		
         hGroup.addGroup(layout.createSequentialGroup()
             .addComponent(l)
             .addGap(0, 0, Short.MAX_VALUE)

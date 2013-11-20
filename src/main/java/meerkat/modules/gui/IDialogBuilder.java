@@ -16,6 +16,15 @@ public interface IDialogBuilder<T extends IDialogBuilder<T>> {
      * @return Ten sam obiekt
      */
     T addLabel(String label);
+    
+    /**
+     * Dodaje hiperlacze.
+     *
+     * @param label Nazwa wyswietlana hiperlacza
+     * @param url	Adres, na ktory prowadzi odsylacz
+     * @return Ten sam obiekt
+     */
+    T addHyperLink(String label, String url);
 
     /**
      * Dodaje pole umożliwiające wprowadzenie jednej linii tekstu.
