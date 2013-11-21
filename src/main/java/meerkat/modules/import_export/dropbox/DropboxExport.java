@@ -67,23 +67,17 @@ public class DropboxExport implements IExportImplementation {
 		String response = DropboxClient.connect();
 		if (response != DropboxClient.CONNECTED) {
 			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
-			while (idb.exec()) {
-				if (idb.validate()) {
-					response = DropboxClient.connect();
-					break;
-				}
+			if (idb.exec()) {
+                            response = DropboxClient.connect();
 			}
 		}
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
-		while (idb.exec()) {
-			if (idb.validate()) {
-				targetPath = idb.getLineEditValue("Choose a directory: ");
-				if (!targetPath.startsWith("/")) // sciezka musi sie zaczynac od
-													// /
-					targetPath = "/" + targetPath;
-				return true;
-			}
+		if (idb.exec()) {
+                        targetPath = idb.getLineEditValue("Choose a directory: ");
+                        if (!targetPath.startsWith("/")) // sciezka musi sie zaczynac od // /
+                                targetPath = "/" + targetPath;
+                        return true;
 		}
 		return false;
 	}

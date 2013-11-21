@@ -263,15 +263,14 @@ public class DialogBuilder implements IDialogBuilder {
         b1.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.release();
+                dialog.okClicked();
             }
         });
         
         b2.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                dialog.release();
-                dialog.cancel();
+                dialog.cancelClicked();
             }
         });
         

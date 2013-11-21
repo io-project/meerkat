@@ -48,11 +48,9 @@ public class BasicExport implements IExportImplementation {
         };
         
         IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
-        while(d.exec()) {
-            if(d.validate()) {
-                outputFile = d.getFileValue("Podaj ścieżkę pliku:");
-                return true;
-            }
+        if(d.exec()) {
+            outputFile = d.getFileValue("Podaj ścieżkę pliku:");
+            return true;
         }
         return false;
     }

@@ -36,11 +36,9 @@ public class SingleFileSerializationImplementation implements ISerializationImpl
         };
         
         IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
-        while(d.exec()) {
-            if(d.validate()) {
-                inputFile = d.getFileValue("Podaj ścieżkę pliku:");
-                return true;
-            }
+        if(d.exec()) {
+            inputFile = d.getFileValue("Podaj ścieżkę pliku:");
+            return true;
         }
         return false;
     }

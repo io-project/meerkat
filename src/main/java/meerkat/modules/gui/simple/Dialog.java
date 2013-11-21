@@ -22,8 +22,15 @@ public final class Dialog implements IDialog {
         state = acquire();
     }
     
-    void cancel() {
+    void okClicked() {
+        if(validate()) {
+            semaphore.release();
+        }
+    }
+    
+    void cancelClicked() {
         state = false;
+        semaphore.release();
     }
     
     boolean acquire() {
@@ -35,21 +42,7 @@ public final class Dialog implements IDialog {
         return true;
     }
     
-    void release() {
-        semaphore.release();
-    }
-    
-    @Override
-    public boolean exec() {
-        dialogBuilder.displayDialog();
-        acquire();
-        dialogBuilder.removeDialog();
-        return state;
-    }
-    
-    @Override
-    public boolean validate() {
-        
+    boolean validate() {
         Map<String,Object> fields = new HashMap<>();
         
         for(DialogDirectoryField d : dialogBuilder.directoryFields) {
@@ -73,6 +66,14 @@ public final class Dialog implements IDialog {
         }
         if(dialogBuilder.validator != null) return dialogBuilder.validator.validate(fields);
         return true;
+    }
+    
+    @Override
+    public boolean exec() {
+        dialogBuilder.displayDialog();
+        acquire();
+        dialogBuilder.removeDialog();
+        return state;
     }
     
     @Override

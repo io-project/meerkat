@@ -69,22 +69,17 @@ public class DropboxImport implements IImportImplementation {
 		String response = DropboxClient.connect();
 		if (response != DropboxClient.CONNECTED) {
 			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
-			while (idb.exec()) {
-				if (idb.validate()) {
-					response = DropboxClient.connect();
-					break;
-				}
+			if (idb.exec()) {
+				response = DropboxClient.connect();
 			}
 		}
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
-		while (idb.exec()) {
-			if (idb.validate()) {
-				filePath = idb.getLineEditValue("Choose a directory: ");
-				if (!filePath.startsWith("/"))
-					filePath = "/" + filePath;
-				return true;
-			}
+		if (idb.exec()) {
+                        filePath = idb.getLineEditValue("Choose a directory: ");
+                        if (!filePath.startsWith("/"))
+                                filePath = "/" + filePath;
+                        return true;
 		}
 		return false;
 	}
