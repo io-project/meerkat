@@ -60,18 +60,13 @@ public class DialogBuilder implements IDialogBuilder {
     }
     
     void removeDialog() {
-        
-        for(Component c : panel.getComponents()) {
-            c.setVisible(false);
-        }
+        panel.removeAll();
+        panel.updateUI();
         ui.enableComponents();
     }
     
     void displayDialog() {
         panel.setLayout(layout);
-        for(Component c : panel.getComponents()) {
-            c.setVisible(true);
-        }
         ui.disableComponents();
     }
     
