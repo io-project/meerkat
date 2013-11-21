@@ -5,6 +5,7 @@ import meerkat.modules.encryption.xor.XorPlugin;
 import meerkat.modules.gui.simple.GuiPlugin;
 import meerkat.modules.import_export.basic.BasicPlugin;
 import meerkat.modules.import_export.dropbox.DropboxPlugin;
+import meerkat.modules.import_export.ftp.FtpPlugin;
 import meerkat.modules.plausible_deniability.none.NoOverridePlugin;
 import meerkat.modules.serialization.singleFile.SingleFileSerializationPlugin;
 import meerkat.modules.serialization.standardSerialization.StandardSerializationPlugin;
@@ -26,6 +27,7 @@ public class App {
         core.registerPlugin(new SingleFileSerializationPlugin());
         core.registerPlugin(new NoEncryptionPlugin());
         core.registerPlugin(new DropboxPlugin());
+        core.registerPlugin(new FtpPlugin());
     }
 
     public static void main(String[] args) {

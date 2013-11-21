@@ -52,6 +52,12 @@
             <artifactId>dropbox-core-sdk</artifactId>
             <version>[1.7,1.8)</version>
         </dependency>
+        
+        <dependency>
+        <groupId>org.apache.servicemix.bundles</groupId>
+        <artifactId>org.apache.servicemix.bundles.commons-net</artifactId>
+        <version>1.4.1_1</version>
+      </dependency>
     </dependencies>
 
     <build>
@@ -77,6 +83,7 @@
                     </archive>
                 </configuration>
             </plugin>
+            
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>2.4</version>
