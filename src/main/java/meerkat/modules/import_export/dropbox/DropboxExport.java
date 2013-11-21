@@ -22,13 +22,12 @@ public class DropboxExport implements IExportImplementation {
 	class CodeValidator implements ILineEditValidator {
 		@Override
 		public boolean validate(String label, String value) {
-			if ((client = DropboxClient.authorize(value)) == null)
+			if ((DropboxClient.client = DropboxClient.authorize(value)) == null)
 				return false;
 			return true;
 		}
 	}
 
-	private DbxClient client = null;
 	private Channel inputChannel = null;
 	private String targetPath = null;
 
@@ -52,7 +51,7 @@ public class DropboxExport implements IExportImplementation {
 			IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wybrania pliku
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addLineEdit("Choose a directory: ", new ILineEditValidator() {
+		idb.addLineEdit("Enter a path: ", new ILineEditValidator() {
 
 			@Override
 			public boolean validate(String label, String value) {
@@ -75,7 +74,7 @@ public class DropboxExport implements IExportImplementation {
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
 		if (idb.exec()) {
-                        targetPath = idb.getLineEditValue("Choose a directory: ");
+                        targetPath = idb.getLineEditValue("Enter a path: ");
                         if (!targetPath.startsWith("/")) // sciezka musi sie zaczynac od // /
                                 targetPath = "/" + targetPath;
                         return true;
@@ -105,14 +104,14 @@ public class DropboxExport implements IExportImplementation {
 				byte[] data = new byte[buffer.remaining()];
 				buffer.get(data);
 				if (uploadId == null) {
-					uploadId = client.chunkedUploadFirst(data);
+					uploadId = DropboxClient.client.chunkedUploadFirst(data);
 				} else {
-					offset = client.chunkedUploadAppend(uploadId, uploadOffset,
+					offset = DropboxClient.client.chunkedUploadAppend(uploadId, uploadOffset,
 							data);
 					while (offset != -1L) { // w offset jest prawidlowy offset,
 						// jesli -1 to OK
 						uploadOffset = offset;
-						offset = client.chunkedUploadAppend(uploadId,
+						offset = DropboxClient.client.chunkedUploadAppend(uploadId,
 								uploadOffset, data);
 					}
 				}
@@ -121,7 +120,7 @@ public class DropboxExport implements IExportImplementation {
 				uploadOffset += bytesRead;
 			}
 
-			client.chunkedUploadFinish(targetPath, DbxWriteMode.add(), uploadId);
+			DropboxClient.client.chunkedUploadFinish(targetPath, DbxWriteMode.add(), uploadId);
 		} catch (ClosedChannelException e) {
 			throw e;
 		} finally {

@@ -20,7 +20,7 @@ public class DropboxClient {
 			config, appInfo);
 
 	private static DbxAuthFinish authFinish = null;
-	private static DbxClient client = null;
+	static DbxClient client = null;
 
 	private static boolean authorized = false;
 

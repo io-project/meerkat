@@ -32,28 +32,26 @@ public class DropboxImport implements IImportImplementation {
 
 	private WritableByteChannel outputChannel = null;
 	private String filePath = null;
+	private IDialogBuilderFactory<?> idbf = null;
 
 	@Override
-	public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(
-			T channel) {
+	public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
 		this.outputChannel = channel;
 	}
 
-	private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory,
-			String url) {
+	private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory, String url) {
 		// metoda tworzy okienko do wpisania kodu
 		// w celu zalogowania się na Dropboxa
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addHyperLink("Obtain an authentication code at dropbox website",
-				url).addLineEdit("Enter a code: ", new CodeValidator());
+		idb.addHyperLink("Obtain an authentication code at dropbox website", url).addLineEdit("Enter a code: ",
+				new CodeValidator());
 		return idb.build();
 	}
 
-	private IDialog buildDirectoryDialog(
-			IDialogBuilderFactory dialogBuilderFactory) {
+	private IDialog buildDirectoryDialog(IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wybrania pliku
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addLineEdit("Choose a directory: ", new ILineEditValidator() {
+		idb.addLineEdit("Enter a path: ", new ILineEditValidator() {
 
 			@Override
 			public boolean validate(String label, String value) {
@@ -66,21 +64,23 @@ public class DropboxImport implements IImportImplementation {
 
 	@Override
 	public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
+		idbf = dialogBuilderFactory;
 		String response = DropboxClient.connect();
 		if (response != DropboxClient.CONNECTED) {
 			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
 			if (idb.exec()) {
-                                response = DropboxClient.connect();
+				response = DropboxClient.connect();
 			}
-                        else return false;
+			else
+				return false;
 		}
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
 		if (idb.exec()) {
-                        filePath = idb.getLineEditValue("Choose a directory: ");
-                        if (!filePath.startsWith("/"))
-                                filePath = "/" + filePath;
-                        return true;
+			filePath = idb.getLineEditValue("Enter a path: ");
+			if (!filePath.startsWith("/"))
+				filePath = "/" + filePath;
+			return true;
 		}
 		return false;
 	}
@@ -92,10 +92,10 @@ public class DropboxImport implements IImportImplementation {
 			throw new NullPointerException();
 
 		try {
-			DbxEntry.File downloadedFile = client.getFile(filePath, null,
-					Channels.newOutputStream(outputChannel));
+			DbxEntry.File downloadedFile = DropboxClient.client.getFile(filePath, null, Channels
+					.newOutputStream(outputChannel));
+			return;
 		} catch (Exception e) {
-			throw new Exception(e);
 		} finally {
 
 		}
