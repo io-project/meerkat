@@ -5,7 +5,6 @@ import java.io.File;
 /**
  * Interfejs udostępniany przez okno dialogowe stworzone przez buildera (IDialogBuilder). Gdy klient jest gotowy
  * powinien wywołać metodę exec(). Metoda ta kończy działanie po zakończeniu interakcji użytkownika z oknem dialogowym.
- * Następnie można dokonać sprawdzenia poprawności podanych przez użytkownika danych, za pomocą metody validate().
  * Jeżeli dane zostały zaakceptowane (przez użytkownika i validatory), to można uzyskać do nich dostęp wywołując
  * odpowiednie metody get...Value(String label) i podając im jako parametr etykiete podaną przy umieszczaniu danego pola
  * przez Buildera w wywołaniu add...(String label, ...).
@@ -17,16 +16,9 @@ public interface IDialog {
      * Wyświetla okno dialogowe jako okno modalne aplikacji. Funkcja kończy się po zakończeniu interakcji użytkownika
      * z oknem dialogowym.
      *
-     * @return true jeżeli użytkownik zaakceptował dane, false w przeciwnym przypadku.
+     * @return true jeżeli użytkownik i validatory zaakceptowały dane, false w przeciwnym przypadku.
      */
     boolean exec();
-
-    /**
-     * Dokonuje sprawdzenia poprawności danych na podstawie dostarczonych validatorów.
-     * 
-     * @return true jeżeli validatory zaakceptowały dane, false w przeciwnym przypadku.
-     */
-    boolean validate();
     
     /**
      * @param label Etykieta
