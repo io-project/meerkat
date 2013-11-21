@@ -70,8 +70,9 @@ public class DropboxImport implements IImportImplementation {
 		if (response != DropboxClient.CONNECTED) {
 			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
 			if (idb.exec()) {
-				response = DropboxClient.connect();
+                                response = DropboxClient.connect();
 			}
+                        else return false;
 		}
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);

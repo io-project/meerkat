@@ -67,9 +67,10 @@ public class DropboxExport implements IExportImplementation {
 		String response = DropboxClient.connect();
 		if (response != DropboxClient.CONNECTED) {
 			IDialog idb = buildUrlDialog(dialogBuilderFactory, response);
-			if (idb.exec()) {
+			if(idb.exec()) {
                             response = DropboxClient.connect();
 			}
+                        else return false;
 		}
 
 		IDialog idb = buildDirectoryDialog(dialogBuilderFactory);
