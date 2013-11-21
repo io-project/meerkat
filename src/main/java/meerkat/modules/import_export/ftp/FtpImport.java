@@ -5,13 +5,21 @@ import com.dropbox.core.DbxEntry;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
+import meerkat.modules.gui.IDirectoryValidator;
 import meerkat.modules.gui.IFileValidator;
 import meerkat.modules.gui.ILineEditValidator;
 import meerkat.modules.import_export.IImportImplementation;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
+import java.nio.channels.ClosedChannelException;
 import java.nio.channels.InterruptibleChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 /**
@@ -20,7 +28,7 @@ import java.nio.channels.WritableByteChannel;
 public class FtpImport implements IImportImplementation {
 
 	private WritableByteChannel outputChannel = null;
-	private String targetPath = null;
+	private String filePath = null;
 
 	@Override
 	public <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel) {
@@ -40,19 +48,13 @@ public class FtpImport implements IImportImplementation {
 			IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wybrania pliku
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addFileChooser("Choose a file from disk: ", new IFileValidator() {
-			@Override
-			public boolean validate(String label, File value) {
-				// TODO Auto-generated method stub
-				return value.exists();
-			}
-		}).addLineEdit("Enter a path on server: ", new ILineEditValidator() {
+		idb.addLineEdit("Path to file on server: ", new ILineEditValidator() {
 
 			@Override
 			public boolean validate(String label, String value) {
 				// TODO Auto-generated method stub
-				if(targetPath.length() > 0) {
-					targetPath = value;
+				if(value.length() > 0) {
+					filePath = value;
 					return true;
 				}
 				return false;
@@ -82,15 +84,24 @@ public class FtpImport implements IImportImplementation {
 	@Override
 	public void run() throws Exception {
 
-		if (targetPath == null || outputChannel == null)
+		if (outputChannel == null)
 			throw new NullPointerException();
 
-		try {
-			//TODO 
-			return;
-		} catch (Exception e) {
-		} finally {
+		OutputStream outputStream = null;
 
+		try {
+			outputStream = Channels
+					.newOutputStream((WritableByteChannel) outputChannel);
+			ByteBuffer buffer = ByteBuffer.allocate(32768);
+
+			BufferedOutputStream bos = new BufferedOutputStream(outputStream);
+			FtpClient.client.retrieveFile(filePath, bos);
+			bos.close();
+			
+		} catch (ClosedChannelException e) {
+			throw e;
+		} finally {
+			outputStream.close();
 		}
 	}
 }
