@@ -10,6 +10,12 @@ package meerkat.modules.gui;
  */
 public interface IDialogBuilder<T extends IDialogBuilder<T>> {
     /**
+     * Dodaje separator.
+     *
+     * @return Ten sam obiekt
+     */
+    T addSeparator();
+    /**
      * Dodaje etykiete tekstową.
      *
      * @param label Treść etykiety
@@ -21,7 +27,7 @@ public interface IDialogBuilder<T extends IDialogBuilder<T>> {
      * Dodaje hiperlacze.
      *
      * @param label Nazwa wyswietlana hiperlacza
-     * @param url	Adres, na ktory prowadzi odsylacz
+     * @param url   Adres, na ktory prowadzi odsylacz
      * @return Ten sam obiekt
      */
     T addHyperLink(String label, String url);

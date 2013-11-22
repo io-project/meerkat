@@ -1,6 +1,5 @@
 package meerkat.modules.gui.simple;
 
-import java.awt.Component;
 import java.awt.Cursor;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
@@ -20,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
@@ -51,7 +51,7 @@ public class DialogBuilder implements IDialogBuilder {
         panel = ui.getDialogPanel();
         layout = new GroupLayout(panel);
         hGroup = layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING);
-        vGroup = layout.createSequentialGroup().addContainerGap();
+        vGroup = layout.createSequentialGroup().addGap(50, 50, 50);
         lineEditFields = new LinkedList<>();
         fileFields = new LinkedList<>();
         directoryFields = new LinkedList<>();
@@ -71,6 +71,16 @@ public class DialogBuilder implements IDialogBuilder {
     }
     
     @Override
+    public IDialogBuilder addSeparator() {
+        JSeparator s = new JSeparator();
+        hGroup.addComponent(s, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
+        vGroup.addComponent(s, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+        .addGap(30, 30, 30);
+        
+        return this;
+    }
+    
+    @Override
     public IDialogBuilder addLabel(String label) {
         JLabel l = new JLabel(label);
         hGroup.addGroup(layout.createSequentialGroup()
@@ -78,7 +88,7 @@ public class DialogBuilder implements IDialogBuilder {
             .addGap(0, 0, Short.MAX_VALUE)
         );
                 
-        vGroup.addComponent(l).addGap(18, 18, 18);
+        vGroup.addComponent(l).addGap(5, 5, 5);
         return this;
     }
     
@@ -91,7 +101,7 @@ public class DialogBuilder implements IDialogBuilder {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					Desktop.getDesktop().browse(new URI(url));
+                                    Desktop.getDesktop().browse(new URI(url));
 				} catch (URISyntaxException | IOException ex) {
 					// It looks like there's a problem
 				}
@@ -103,24 +113,17 @@ public class DialogBuilder implements IDialogBuilder {
             .addGap(0, 0, Short.MAX_VALUE)
         );
                 
-        vGroup.addComponent(l).addGap(18, 18, 18);
+        vGroup.addComponent(l).addGap(5, 5, 5);
         return this;
     }
 
     @Override
     public IDialogBuilder addLineEdit(String label, ILineEditValidator validator) {
-        JLabel l = new JLabel(label);
         JTextField x = new JTextField();
-        hGroup.addGroup(layout.createSequentialGroup()
-            .addComponent(l)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,30,30)
-            .addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE)
-        );
+        hGroup.addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
                     
-        vGroup.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(l)
-            .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        ).addGap(18, 18, 18);
+        vGroup.addComponent(x, 25,25,25)
+        .addGap(25, 25, 25);
         
         lineEditFields.add(new DialogLineEditField(label,x,validator));
         return this;
@@ -128,18 +131,11 @@ public class DialogBuilder implements IDialogBuilder {
 
     @Override
     public IDialogBuilder addPasswordEdit(String label, IPasswordValidator validator) {
-        JLabel l = new JLabel(label);
         JPasswordField x = new JPasswordField();
-        hGroup.addGroup(layout.createSequentialGroup()
-            .addComponent(l)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,30,30)
-            .addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE)
-        );
+        hGroup.addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
                     
-        vGroup.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(l)
-            .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-        ).addGap(18, 18, 18);
+        vGroup.addComponent(x, 25,25,25)
+        .addGap(25, 25, 25);
         
         passwordFields.add(new DialogPasswordField(label,x,validator));
         return this;
@@ -147,9 +143,11 @@ public class DialogBuilder implements IDialogBuilder {
 
     @Override
     public IDialogBuilder addFileChooser(String label, IFileValidator validator) {
-        final JLabel l = new JLabel(label);
+        
         final JTextField x = new JTextField();
-        final JButton b = new JButton("wybierz");
+        final JButton b = new JButton("select");
+        b.setFocusable(false);
+        
         b.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -158,18 +156,15 @@ public class DialogBuilder implements IDialogBuilder {
         });
         
         hGroup.addGroup(layout.createSequentialGroup()
-            .addComponent(l)
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,30,30)
             .addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,10,10)
             .addComponent(b)
         );
                     
         vGroup.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(l)
-            .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(x, 25,25,25)
             .addComponent(b)
-        ).addGap(18, 18, 18);
+        ).addGap(25, 25, 25);
         
         fileFields.add(new DialogFileField(label,x,validator));
         return this;
@@ -177,9 +172,11 @@ public class DialogBuilder implements IDialogBuilder {
 
     @Override
     public IDialogBuilder addDirectoryChooser(String label, IDirectoryValidator validator) {
-        final JLabel l = new JLabel(label);
+    
         final JTextField x = new JTextField();
-        final JButton b = new JButton("wybierz");
+        final JButton b = new JButton("select");
+        b.setFocusable(false);
+        
         b.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,7 +185,6 @@ public class DialogBuilder implements IDialogBuilder {
         });
         
         hGroup.addGroup(layout.createSequentialGroup()
-            .addComponent(l)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,30,30)
             .addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,10,10)
@@ -196,10 +192,9 @@ public class DialogBuilder implements IDialogBuilder {
         );
                     
         vGroup.addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-            .addComponent(l)
-            .addComponent(x, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+            .addComponent(x, 25,25,25)
             .addComponent(b)
-        ).addGap(18, 18, 18);
+        ).addGap(25, 25, 25);
                 
         directoryFields.add(new DialogDirectoryField(label,x,validator));
         return this;
@@ -236,9 +231,9 @@ public class DialogBuilder implements IDialogBuilder {
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(100, 100, 100)
                 .addGroup(hGroup)
-                .addContainerGap()
+                .addGap(100, 100, 100)
             )
         );
     }
@@ -252,8 +247,10 @@ public class DialogBuilder implements IDialogBuilder {
     }
     
     private void initButtons(final Dialog dialog) {
-        JButton b1 = new JButton("ok");
-        JButton b2 = new JButton("anuluj");
+        JButton b1 = new JButton("accept");
+        JButton b2 = new JButton("cancel");
+        b1.setFocusable(false);
+        b2.setFocusable(false);
         
         b1.addActionListener(new ActionListener(){
             @Override
@@ -282,7 +279,7 @@ public class DialogBuilder implements IDialogBuilder {
         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                 .addComponent(b1)
                 .addComponent(b2)
-        ).addContainerGap();
+        ).addGap(30, 30, 30);
         
     }
     
