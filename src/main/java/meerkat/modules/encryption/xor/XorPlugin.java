@@ -6,7 +6,7 @@ import meerkat.modules.encryption.IEncryptionPlugin;
 
 public class XorPlugin implements IEncryptionPlugin{
 
-	private static String name = "Basic Encryption (XOR)";
+	private static String name = "Xor Encryption";
 	
 	@Override
 	public String getUserVisibleName() {
