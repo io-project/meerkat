@@ -43,15 +43,20 @@ public class DropboxImport implements IImportImplementation {
 		// metoda tworzy okienko do wpisania kodu
 		// w celu zalogowania się na Dropboxa
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addHyperLink("Obtain an authentication code at dropbox website", url).addLineEdit("Enter a code: ",
-				new CodeValidator());
+		idb.addLabel("dropbox import")
+                   .addSeparator()
+                   .addHyperLink("Obtain an authentication code at dropbox website", url)
+                   .addLineEdit("Enter a code: ",new CodeValidator());
 		return idb.build();
 	}
 
 	private IDialog buildDirectoryDialog(IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wybrania pliku
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addLineEdit("Enter a path: ", new ILineEditValidator() {
+		idb.addLabel("dropbox export")
+                   .addSeparator()
+                   .addLabel("Enter a path: ")
+                   .addLineEdit("Enter a path: ", new ILineEditValidator() {
 
 			@Override
 			public boolean validate(String label, String value) {

@@ -26,6 +26,7 @@ public class XorEncryption implements IEncryptionImplementation {
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
         IDialogBuilder<?> dialogBuilder = dialogBuilderFactory.newDialogBuilder();
+        String label_title = "xor encryption";
         String label_password = "Haslo";
         String label_description = "Podaj haslo chroniace kodowanie (1-8 znakow):";
         IPasswordValidator passwordValidator = new IPasswordValidator(){
@@ -35,6 +36,8 @@ public class XorEncryption implements IEncryptionImplementation {
         	}
         };
         IDialog dialog = dialogBuilder
+                .addLabel(label_title)
+                .addSeparator()
                 .addLabel(label_description)
                 .addPasswordEdit(label_password, passwordValidator)
                 .build();

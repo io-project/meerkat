@@ -8,6 +8,7 @@ import meerkat.modules.import_export.IImportImplementation;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IFileValidator;
 
 /**
@@ -35,9 +36,15 @@ public class BasicImport implements IImportImplementation {
             }
         };
         
-        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
+        IDialogBuilder builder = dialogBuilderFactory.newDialogBuilder();
+        builder.addLabel("basic import:")
+               .addSeparator()
+               .addLabel("podaj ścieżkę pliku:")
+               .addFileChooser("fc",v);
+        IDialog d = builder.build();
+        
         if(d.exec()) {
-            inputFile = d.getFileValue("Podaj ścieżkę pliku:");
+            inputFile = d.getFileValue("fc");
             return true;
         }
         return false;

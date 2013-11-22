@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.WritableByteChannel;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IFileValidator;
 
 /**
@@ -35,9 +36,15 @@ public class SingleFileSerializationImplementation implements ISerializationImpl
             }
         };
         
-        IDialog d = dialogBuilderFactory.newDialogBuilder().addFileChooser("Podaj ścieżkę pliku:",v).build();
+        IDialogBuilder builder = dialogBuilderFactory.newDialogBuilder();
+        builder.addLabel("single file serialization:")
+               .addSeparator()
+               .addLabel("podaj ścieżkę pliku:")
+               .addFileChooser("fc",v);
+        IDialog d = builder.build();
+        
         if(d.exec()) {
-            inputFile = d.getFileValue("Podaj ścieżkę pliku:");
+            inputFile = d.getFileValue("fc");
             return true;
         }
         return false;

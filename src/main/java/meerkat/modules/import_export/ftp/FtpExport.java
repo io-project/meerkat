@@ -36,9 +36,14 @@ public class FtpExport implements IExportImplementation {
 	private IDialog buildUrlDialog(IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wpisania adresu serwera
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addLineEdit("Enter a server address: ")
-			.addLineEdit("Enter username: ")
-			.addLineEdit("Enter password: ");
+		idb.addLabel("ftp export")
+                   .addSeparator()
+                   .addLabel("Enter a server address: ")
+                   .addLineEdit("Enter a server address: ")
+                   .addLabel("Enter username: ")
+                   .addLineEdit("Enter username: ")
+                   .addLabel("Enter password: ")
+                   .addPasswordEdit("Enter password: ");
 		return idb.build();
 	}
 
@@ -46,7 +51,10 @@ public class FtpExport implements IExportImplementation {
 			IDialogBuilderFactory dialogBuilderFactory) {
 		// metoda tworzy okienko do wybrania pliku
 		IDialogBuilder idb = dialogBuilderFactory.newDialogBuilder();
-		idb.addLineEdit("Enter a path on server: ", new ILineEditValidator() {
+		idb.addLabel("ftp export")
+                   .addSeparator()
+                   .addLabel("Enter a path on server: ")
+                   .addLineEdit("Enter a path on server: ", new ILineEditValidator() {
 
 			@Override
 			public boolean validate(String label, String value) {
