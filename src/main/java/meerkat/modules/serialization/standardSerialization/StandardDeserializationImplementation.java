@@ -1,5 +1,7 @@
 package meerkat.modules.serialization.standardSerialization;
 
+import meerkat.modules.gui.IDialog;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
 import meerkat.modules.serialization.IDeserializationImplementation;
 
@@ -16,10 +18,20 @@ public class StandardDeserializationImplementation implements
     private final FileCreater fileCreater = new FileCreater();
     private final DirectoryTreeCreater directoryTreeCreater = new DirectoryTreeCreater();
 
-    // Uzytkownik musi wybrac sciezke gdzie zdeserializuje sie plik.
+    // Uzytkownik musi wybrac sciezke gdzie zdeserializuje sie katalog.
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-        // TODO Auto-generated method stub
+    	IDialogBuilder builder = dialogBuilderFactory.newDialogBuilder();
+        builder.addLabel("Standard deserialization:")
+               .addSeparator()
+               .addLabel("Podaj ścieżkę katalogu:")
+               .addDirectoryChooser("dc");
+        IDialog d = builder.build();
+        
+        if(d.exec()) {
+            path = d.getDirectoryValue("dc").getAbsolutePath();
+            return true;
+        }
         return false;
     }
 

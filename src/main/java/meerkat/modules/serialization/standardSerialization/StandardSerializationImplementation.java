@@ -1,9 +1,13 @@
 package meerkat.modules.serialization.standardSerialization;
 
+import meerkat.modules.gui.IDialog;
+import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogBuilderFactory;
+import meerkat.modules.gui.IFileValidator;
 import meerkat.modules.serialization.ISerializationImplementation;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
@@ -24,7 +28,20 @@ public class StandardSerializationImplementation implements
     //Uzytkownik musi wybrac sciezke serializowanego pliku.
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-        // TODO Auto-generated method stub
+
+    	//potrzebny validator jeszcze
+        
+        IDialogBuilder builder = dialogBuilderFactory.newDialogBuilder();
+        builder.addLabel("Standard serialization:")
+               .addSeparator()
+               .addLabel("Podaj ścieżkę katalogu:")
+               .addDirectoryChooser("dc");
+        IDialog d = builder.build();
+        
+        if(d.exec()) {
+        	path = d.getDirectoryValue("dc").getAbsolutePath();
+            return true;
+        }
         return false;
     }
 

@@ -34,22 +34,22 @@ public class SingleFileSerializationPlugin implements ISerializationPlugin {
 
             @Override
             public <T extends ReadableByteChannel & InterruptibleChannel> void setInputChannel(T channel) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet."); 
             }
 
             @Override
             public void setResultCallback(IResultCallback<TreeModel> resultCallback) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet."); 
             }
 
             @Override
             public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet.");  
             }
 
             @Override
             public void run() throws Exception {
-                throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+                throw new UnsupportedOperationException("Not supported yet."); 
             }
 
         };
