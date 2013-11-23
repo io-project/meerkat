@@ -185,7 +185,6 @@ public class DialogBuilder implements IDialogBuilder {
         });
         
         hGroup.addGroup(layout.createSequentialGroup()
-            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,30,30)
             .addComponent(x, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE)
             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED,10,10)
             .addComponent(b)
