@@ -4,14 +4,17 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import javax.swing.tree.TreeModel;
 import java.util.concurrent.Callable;
 
+import static org.easymock.EasyMock.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 /**
  * @author Maciej Poleski
  */
-public class DecryptionJobTest {
+public class DecryptionPreviewJobTest {
 
     private PluginsProvider pluginsProvider;
 
@@ -27,26 +30,30 @@ public class DecryptionJobTest {
 
     @Test
     public void test1() throws Throwable {
+        String filename = "__builtin_filename_decryptionPreview";
+        final TreeModel treeModel = createMock(TreeModel.class);
+        replay(treeModel);
         final Throwable[] r = {null};
         final EncryptionPipeline encryptionPipeline = new EncryptionPipeline(pluginsProvider.getSerializationPlugin(new Callable<Byte>() {
-            byte r = 4;
+            byte r = 54;
 
             @Override
             public Byte call() throws Exception {
                 return r++;
             }
-        }, 10000, "filename", null), pluginsProvider.getEncryptionPlugin(), pluginsProvider.getImportExportPlugin(), pluginsProvider.getOverridePlugin());
+        }, 10000, filename, treeModel), pluginsProvider.getEncryptionPlugin(), pluginsProvider.getImportExportPlugin(), pluginsProvider.getOverridePlugin());
         final boolean[] running = {false};
         EncryptionJob job = new EncryptionJob(encryptionPipeline, null, null, new IResultHandler<Void>() {
             @Override
             public void handleResult(Void result) {
 
-                IJob decryptionJob = new DecryptionJobTemplate<>(encryptionPipeline.getImportExportPlugin(), null, null, pluginsProvider, new DecryptionImplementationProvider(), new IResultHandler<Void>() {
+                IJob decryptionJob = new DecryptionJobTemplate<>(encryptionPipeline.getImportExportPlugin(), null, null, pluginsProvider, new DecryptionPreviewImplementationProvider(), new IResultHandler<TreeModel>() {
                     @Override
-                    public void handleResult(Void result) {
-                        synchronized (DecryptionJobTest.this) {
+                    public void handleResult(TreeModel result) {
+                        synchronized (DecryptionPreviewJobTest.this) {
+                            assertEquals(treeModel, result);
                             running[0] = false;
-                            DecryptionJobTest.this.notify();
+                            DecryptionPreviewJobTest.this.notify();
                         }
                     }
 
@@ -74,5 +81,6 @@ public class DecryptionJobTest {
         }
         if (r[0] != null)
             throw r[0];
+        verify(treeModel);
     }
 }

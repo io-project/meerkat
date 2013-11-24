@@ -31,7 +31,7 @@ public class EncryptionJobTest {
             public Byte call() throws Exception {
                 return 7;
             }
-        }, 10000), pluginsProvider.getEncryptionPlugin(), pluginsProvider.getImportExportPlugin(), pluginsProvider.getOverridePlugin());
+        }, 10000, "filename", null), pluginsProvider.getEncryptionPlugin(), pluginsProvider.getImportExportPlugin(), pluginsProvider.getOverridePlugin());
         final boolean[] running = {false};
         EncryptionJob job = new EncryptionJob(encryptionPipeline, null, null, new IResultHandler<Void>() {
             @Override

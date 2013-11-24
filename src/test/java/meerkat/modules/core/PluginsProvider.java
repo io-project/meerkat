@@ -16,7 +16,11 @@ import meerkat.modules.serialization.IDeserializationPreviewImplementation;
 import meerkat.modules.serialization.ISerializationImplementation;
 import meerkat.modules.serialization.ISerializationPlugin;
 
+import javax.swing.tree.TreeModel;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
@@ -37,7 +41,7 @@ class PluginsProvider implements IPluginManager {
     private int importExportPluginsCount = 0;
     private int overridePluginsCount = 0;
 
-    ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength) {
+    ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength, final String fileName, final TreeModel treeModel) {
         ISerializationPlugin result = new ISerializationPlugin() {
             final ArrayList<Byte> serializedData = new ArrayList<>();
             final String pluginId = "__builtin__testing_serialization" + serializationPluginsCount++;
@@ -59,6 +63,8 @@ class PluginsProvider implements IPluginManager {
 
                     @Override
                     public void run() throws Exception {
+                        ObjectOutputStream oos = new ObjectOutputStream(Channels.newOutputStream(channel));
+                        oos.writeObject(fileName);
                         ByteBuffer byteBuffer = ByteBuffer.allocate(dataLength);
                         for (int i = 0; i < dataLength; ++i) {
                             byte d = dataSource.call();
@@ -88,6 +94,8 @@ class PluginsProvider implements IPluginManager {
 
                     @Override
                     public void run() throws Exception {
+                        ObjectInputStream ois = new ObjectInputStream(Channels.newInputStream(channel));
+                        assertEquals(fileName, ois.readObject());
                         int i = 0;
                         int j;
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
@@ -107,7 +115,32 @@ class PluginsProvider implements IPluginManager {
 
             @Override
             public IDeserializationPreviewImplementation getDeserializationPreviewImplementation() {
-                return null;
+                return new IDeserializationPreviewImplementation() {
+                    ReadableByteChannel channel;
+                    private IResultCallback<TreeModel> resultCallback;
+
+                    @Override
+                    public <T extends ReadableByteChannel & InterruptibleChannel> void setInputChannel(T channel) {
+                        this.channel = channel;
+                    }
+
+                    @Override
+                    public void setResultCallback(IResultCallback<TreeModel> resultCallback) {
+                        this.resultCallback = resultCallback;
+                    }
+
+                    @Override
+                    public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
+                        return true;
+                    }
+
+                    @Override
+                    public void run() throws Exception {
+                        ObjectInputStream ois = new ObjectInputStream(Channels.newInputStream(channel));
+                        assertEquals(fileName, ois.readObject());
+                        resultCallback.setResult(treeModel);
+                    }
+                };
             }
 
             @Override
