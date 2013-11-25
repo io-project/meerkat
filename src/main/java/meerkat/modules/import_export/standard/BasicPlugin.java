@@ -1,4 +1,4 @@
-package meerkat.modules.import_export.basic;
+package meerkat.modules.import_export.standard;
 
 import meerkat.modules.import_export.IExportImplementation;
 import meerkat.modules.import_export.IImportExportPlugin;

@@ -1,4 +1,4 @@
-package meerkat.modules.gui.simple;
+package meerkat.modules.gui.standard;
 
 import java.awt.Color;
 import java.awt.Font;

@@ -1,4 +1,4 @@
-package meerkat.modules.gui.simple;
+package meerkat.modules.gui.standard;
 
 import javax.swing.JTextField;
 import meerkat.modules.gui.IPasswordValidator;

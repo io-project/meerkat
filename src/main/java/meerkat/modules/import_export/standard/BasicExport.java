@@ -1,4 +1,4 @@
-package meerkat.modules.import_export.basic;
+package meerkat.modules.import_export.standard;
 
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilderFactory;
@@ -49,7 +49,7 @@ public class BasicExport implements IExportImplementation {
         };
         
         IDialogBuilder builder = dialogBuilderFactory.newDialogBuilder();
-        builder.addLabel("basic export:")
+        builder.addLabel("standard export:")
                .addSeparator()
                .addLabel("podaj ścieżkę pliku:")
                .addFileChooser("fc",v);

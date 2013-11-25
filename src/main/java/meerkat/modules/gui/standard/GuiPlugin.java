@@ -1,4 +1,4 @@
-package meerkat.modules.gui.simple;
+package meerkat.modules.gui.standard;
 
 import meerkat.modules.core.ICore;
 import meerkat.modules.gui.IGuiImplementation;

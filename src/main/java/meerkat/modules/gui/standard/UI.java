@@ -1,4 +1,4 @@
-package meerkat.modules.gui.simple;
+package meerkat.modules.gui.standard;
 
 import java.awt.CardLayout;
 import javax.swing.ImageIcon;
