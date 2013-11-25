@@ -19,6 +19,7 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
+import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
 import meerkat.modules.gui.IDialog;
@@ -59,15 +60,12 @@ public class DialogBuilder implements IDialogBuilder {
         validator = null;
     }
     
-    void removeDialog() {
-        panel.removeAll();
-        panel.updateUI();
-        ui.enableComponents();
+    void removeContents() {
+        ui.clearDialogPanel();
     }
     
-    void displayDialog() {
+    void displayContents() {
         panel.setLayout(layout);
-        ui.disableComponents();
     }
     
     @Override
@@ -224,8 +222,8 @@ public class DialogBuilder implements IDialogBuilder {
         this.validator = validator;
         return this;
     }
-
-    private void setHorizontalGroup() {
+    
+    void updateLayout() {
         
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,9 +233,6 @@ public class DialogBuilder implements IDialogBuilder {
                 .addGap(100, 100, 100)
             )
         );
-    }
-    
-    private void setVerticalGroup() {
         
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -288,10 +283,41 @@ public class DialogBuilder implements IDialogBuilder {
         Dialog dialog = new Dialog(this);
         
         initButtons(dialog);
-        setHorizontalGroup();
-        setVerticalGroup();
+        updateLayout();
         
         return dialog;
     }
     
+    
+    // non-standard build and non-standard components
+    // for jobObserver dialogs
+    
+    void buildAndShow() {
+        updateLayout();
+        displayContents();
+    }
+    
+    IDialogBuilder addProgressBar() {
+        
+        JProgressBar p = new JProgressBar();
+        p.setIndeterminate(true);
+        hGroup.addComponent(p, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
+        vGroup.addComponent(p, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+        .addGap(30, 30, 30);
+        return this;
+    }
+    
+    void initButton(JButton b) {
+        hGroup.addGroup(
+                layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(b)
+                .addGap(0, 0, Short.MAX_VALUE)
+        );
+        
+        vGroup.addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, DEFAULT_SIZE, Short.MAX_VALUE)
+        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(b)
+        ).addGap(30, 30, 30);
+    }
 }

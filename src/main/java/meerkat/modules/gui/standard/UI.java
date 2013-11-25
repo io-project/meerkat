@@ -1,7 +1,9 @@
 package meerkat.modules.gui.standard;
 
 import java.awt.CardLayout;
+import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
+import javax.swing.JPanel;
 import javax.swing.tree.TreeModel;
 import meerkat.modules.core.EncryptionPipeline;
 import meerkat.modules.core.ICore;
@@ -30,8 +32,13 @@ public class UI extends javax.swing.JFrame {
         initComboBoxes();
     }
     
-    javax.swing.JPanel getDialogPanel() {
+    JPanel getDialogPanel() {
         return jPanel4;
+    }
+    
+    void clearDialogPanel() {
+        jPanel4.removeAll();
+        jPanel4.updateUI();
     }
     
     void disableComponents(){
@@ -64,6 +71,21 @@ public class UI extends javax.swing.JFrame {
         }
     }
     
+    private IResultHandler createHandler() {
+        return new IResultHandler(){
+
+            @Override
+            public void handleResult(Object result) {
+                // TODO implement
+            }
+            @Override
+            public void handleException(Throwable t) {
+                // TODO implement
+                t.printStackTrace();
+            }
+        };
+    }
+    
     private void startEncryption() {
         
         ISerializationPlugin p1 = null;
@@ -85,25 +107,8 @@ public class UI extends javax.swing.JFrame {
         }
         
         EncryptionPipeline pipeline = new EncryptionPipeline(p1,p2,p3,p4);
-        IJobObserver observer = new IJobObserver() {
-            @Override
-            public void update(IJob job, IJob.State state) {
-                // TODO implement
-            }
-        };
-        IResultHandler<Void> resultHandler = new IResultHandler(){
-
-            @Override
-            public void handleResult(Object result) {
-                // TODO implement
-            }
-            @Override
-            public void handleException(Throwable t) {
-                // TODO implement
-                t.printStackTrace();
-            }
-        };
-        
+        IJobObserver observer = new JobObserver(this);
+        IResultHandler<Void> resultHandler = createHandler();
         core.prepareEncryptionJob(pipeline, observer, resultHandler).start();
     }
     
@@ -114,25 +119,8 @@ public class UI extends javax.swing.JFrame {
             if(jComboBox8.getSelectedItem().equals(p.getUserVisibleName())) p8=p;
         }
         
-        IJobObserver observer = new IJobObserver() {
-            @Override
-            public void update(IJob job, IJob.State state) {
-                // TODO implement
-            }
-        };
-        IResultHandler<Void> resultHandler = new IResultHandler(){
-
-            @Override
-            public void handleResult(Object result) {
-                // TODO implement
-            }
-            @Override
-            public void handleException(Throwable t) {
-                // TODO implement
-                t.printStackTrace();
-            }
-        };
-        
+        IJobObserver observer = new JobObserver(this);
+        IResultHandler<Void> resultHandler = createHandler();
         core.prepareDecryptionJob(p8, observer, resultHandler).start();
     }
     
@@ -142,26 +130,9 @@ public class UI extends javax.swing.JFrame {
             if(jComboBox6.getSelectedItem().equals(p.getUserVisibleName())) p6=p;
         }
         
-        IJobObserver observer = new IJobObserver() {
-            @Override
-            public void update(IJob job, IJob.State state) {
-                // TODO implement
-            }
-        };
-        IResultHandler<TreeModel> resultHandler = new IResultHandler(){
-
-            @Override
-            public void handleResult(Object result) {
-                // TODO implement
-            }
-            @Override
-            public void handleException(Throwable t) {
-                // TODO implement
-                t.printStackTrace();
-            }
-        };
-        
-        core.prepareDecryptionPreviewJob(p6, observer, resultHandler);
+        IJobObserver observer = new JobObserver(this);
+        IResultHandler<TreeModel> resultHandler = createHandler();
+        core.prepareDecryptionPreviewJob(p6, observer, resultHandler).start();
     }
     
     /**

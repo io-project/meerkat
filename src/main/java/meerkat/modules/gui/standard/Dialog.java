@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import javax.swing.JPanel;
 import meerkat.modules.gui.IDialog;
 
 /**
@@ -70,9 +71,9 @@ public final class Dialog implements IDialog {
     
     @Override
     public boolean exec() {
-        dialogBuilder.displayDialog();
+        dialogBuilder.displayContents();
         acquire();
-        dialogBuilder.removeDialog();
+        dialogBuilder.removeContents();
         return state;
     }
     
