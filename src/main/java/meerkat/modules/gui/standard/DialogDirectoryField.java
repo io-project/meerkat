@@ -21,7 +21,11 @@ public class DialogDirectoryField extends DialogField {
 
     public boolean validate() {
         if(validator == null) return true;
-        return ((IDirectoryValidator) validator).validate(label, getValue());
+        if( !((IDirectoryValidator) validator).validate(label, getValue()) ) {
+            super.setInvalid();
+            return false;
+        }
+        return true;
     }
     
 }

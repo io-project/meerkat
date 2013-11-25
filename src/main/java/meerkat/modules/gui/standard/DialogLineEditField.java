@@ -19,6 +19,10 @@ public class DialogLineEditField extends DialogField {
 
     public boolean validate() {
         if(validator == null) return true;
-        return ((ILineEditValidator) validator).validate(label, getValue());
+        if( !((ILineEditValidator) validator).validate(label, getValue()) ) {
+            super.setInvalid();
+            return false;
+        }
+        return true;
     }
 }

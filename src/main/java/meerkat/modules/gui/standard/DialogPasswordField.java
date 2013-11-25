@@ -19,6 +19,10 @@ public class DialogPasswordField extends DialogField {
 
     public boolean validate() {
         if(validator == null) return true;
-        return ((IPasswordValidator) validator).validate(label, getValue());
+        if( !((IPasswordValidator) validator).validate(label, getValue()) ) {
+            super.setInvalid();
+            return false;
+        }
+        return true;
     }
 }

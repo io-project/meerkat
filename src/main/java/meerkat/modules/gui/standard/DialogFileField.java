@@ -21,7 +21,11 @@ public class DialogFileField extends DialogField {
 
     public boolean validate() {
         if(validator == null) return true;
-        return ((IFileValidator) validator).validate(label, getValue());
+        if( !((IFileValidator) validator).validate(label, getValue()) ) {
+            super.setInvalid();
+            return false;
+        }
+        return true;
     }
     
 }

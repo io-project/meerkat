@@ -10,7 +10,7 @@ import meerkat.modules.import_export.IImportImplementation;
  */
 public class BasicPlugin implements IImportExportPlugin {
 
-    private static String name = "Basic I/E";
+    private static final String name = "Standard I/E";
     
     @Override
     public IImportImplementation getImportImplementation() {
