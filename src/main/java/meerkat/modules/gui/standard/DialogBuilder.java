@@ -149,7 +149,7 @@ public class DialogBuilder implements IDialogBuilder {
         b.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                new FileChoserPopup(x).build(true);
+                new FileChooserPopup(x).build(true);
             }
         });
         
@@ -178,7 +178,7 @@ public class DialogBuilder implements IDialogBuilder {
         b.addActionListener(new ActionListener(){
             @Override
             public void actionPerformed(ActionEvent e) {
-                new FileChoserPopup(x).build(false);
+                new FileChooserPopup(x).build(false);
             }
         });
         
