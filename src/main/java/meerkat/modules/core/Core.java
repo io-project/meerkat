@@ -1,7 +1,7 @@
 package meerkat.modules.core;
 
 import meerkat.modules.IPlugin;
-import meerkat.modules.NoGuiPluginRegistered;
+import meerkat.modules.NoGuiPluginRegisteredException;
 import meerkat.modules.PluginCollisionException;
 import meerkat.modules.PluginNotFoundException;
 import meerkat.modules.encryption.IEncryptionPlugin;
@@ -127,7 +127,7 @@ class Core implements ICore, IPluginManager {
 
         if (guiPlugin == null) {
             reportBrokenPlugins();
-            throw new NoGuiPluginRegistered();
+            throw new NoGuiPluginRegisteredException();
         }
 
         guiImplementation = guiPlugin.getImplementation(this);
