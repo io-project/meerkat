@@ -135,9 +135,9 @@ public class MementoTest {
 
         DecryptionPipeline decryptionPipeline = memento1.getDecryptionPipeline(iep, pluginManager);
 
-        assertEquals(iep, decryptionPipeline.getImportExportPlugin());
-        assertEquals(encryptionPlugin, decryptionPipeline.getEncryptionPlugin());
-        assertEquals(serializationPlugin, decryptionPipeline.getSerializationPlugin());
+        assertSame(iep, decryptionPipeline.getImportExportPlugin());
+        assertSame(encryptionPlugin, decryptionPipeline.getEncryptionPlugin());
+        assertSame(serializationPlugin, decryptionPipeline.getSerializationPlugin());
 
         verify(iep, encryptionPlugin, serializationPlugin, pluginManager);
     }
