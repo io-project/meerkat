@@ -11,7 +11,7 @@ import meerkat.modules.serialization.ISerializationPlugin;
  *
  * @author Maciej Poleski
  */
-class Plugins {
+final class Plugins {
 
     /**
      * Sprawdza podstawowe cechy pluginu - wspólne dla wszystkich.
