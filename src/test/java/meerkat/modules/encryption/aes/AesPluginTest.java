@@ -4,6 +4,7 @@ import static org.junit.Assert.assertArrayEquals;
 
 import java.util.Random;
 
+import meerkat.modules.IncorrectPasswordException;
 import meerkat.modules.encryption.xor.MockReadableChannel;
 import meerkat.modules.encryption.xor.MockWriteableChannel;
 
@@ -62,6 +63,30 @@ public class AesPluginTest {
 		new Random().nextBytes(in);
 		writeChannel.setSize(out_size);
 		writeChannel.reset();
+		
+		/*action*/
+		readChannel.setSendMessage(in);
+		aesEncryption.run();
+		readChannel.setSendMessage(writeChannel.getGotMessage());
+		writeChannel.setSize(size);
+		writeChannel.reset();
+		aesDecryption.run();
+		
+		/*assertion*/
+		assertArrayEquals(in, writeChannel.getGotMessage());
+	}
+	
+	@Test(expected = IncorrectPasswordException.class)
+	public void checkIncorrectPassword() throws Exception{
+		/*preprare*/
+		int size = 1500;
+		int out_size = 1520;
+		byte[] in = new byte[size];
+		new Random().nextBytes(in);
+		writeChannel.setSize(out_size);
+		writeChannel.reset();
+		char[] inPassword = {'a','a','a'};
+		aesDecryption.getAesAddition().makeSecretKeyFromPassword(inPassword);
 		
 		/*action*/
 		readChannel.setSendMessage(in);

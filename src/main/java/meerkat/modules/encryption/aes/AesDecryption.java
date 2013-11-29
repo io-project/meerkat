@@ -1,5 +1,6 @@
 package meerkat.modules.encryption.aes;
 
+import meerkat.modules.IncorrectPasswordException;
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
@@ -10,7 +11,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
-
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
@@ -61,10 +61,29 @@ public class AesDecryption implements IDecryptionImplementation {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
         
+        /*byte[] oneArray = new byte[64];
+        Arrays.fill(oneArray, (byte)1);
+        byte[] ansArray = new byte[64];
+        
+        boolean checked = false;*/
+        
+            
+        
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();
-            cipher.doFinal(readBuffer, writeBuffer);
+            try{
+            	cipher.doFinal(readBuffer, writeBuffer);
+            }catch(Exception e){
+            	throw new IncorrectPasswordException();
+            }
             writeBuffer.flip();
+            /*if(!checked){
+        		for(int i=0; i<64; i++)
+        			ansArray[i] = writeBuffer.get();
+        		if(!Arrays.equals(oneArray, ansArray))
+        			throw new IncorrectPasswordException();
+        		checked = true;
+        	}*/
             writeChannel.write(writeBuffer);
             readBuffer.clear();
             writeBuffer.clear();

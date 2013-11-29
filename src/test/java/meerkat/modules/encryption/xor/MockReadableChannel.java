@@ -30,7 +30,7 @@ public class MockReadableChannel implements ReadableByteChannel, InterruptibleCh
 	@Override
 	public int read(ByteBuffer arg0) throws IOException {
 		if(position == end) return -1;
-		int capacity = arg0.capacity();
+		int capacity = arg0.remaining();
 		int put = 0;
 		for(;position<end && capacity>0;position++, capacity--){
 			arg0.put(send[position]);
