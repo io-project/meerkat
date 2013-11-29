@@ -66,7 +66,7 @@ public class StandardSerializationImplementation implements
         while (buf.hasRemaining()) {
             outputChannel.write(buf);
         }
-
+        
         //teraz nalezy wyslac zawartosc plikow
         directoryNode.DFSReadFiles(fileSender, outputChannel);
 

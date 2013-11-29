@@ -16,7 +16,7 @@ public class FileCreater {
 			ReadableByteChannel inputChannel) throws IOException {
 		
 		int counter = 0;
-
+		int x= 0;
 		do {
 			ByteBuffer buf = ByteBuffer.allocate((int) Math.min(size, bufferSize));
 
@@ -34,6 +34,7 @@ public class FileCreater {
 			
 			size -= bytesRead;
 			counter += bytesRead;
+			
 
 		} while (size > 0);
 
