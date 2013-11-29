@@ -24,11 +24,13 @@ public class XorPluginTest {
     public void setUp() throws Exception {
 		readChannel = new MockReadableChannel();
 		writeChannel = new MockWriteableChannel();
+		char[] password = {'a','b'};
+		
 		xorEncryption = new XorEncryption();
 		xorEncryption.setInputChannel(readChannel);
 		xorEncryption.setOutputChannel(writeChannel);
-		char[] password = {'a','b'};
 		xorEncryption.getXorAddition().makeHashArrayFromPassword(password);
+		
 		xorDecryption = new XorDecryption();
 		xorDecryption.setInputChannel(readChannel);
 		xorDecryption.setOutputChannel(writeChannel);
