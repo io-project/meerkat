@@ -62,10 +62,6 @@ public class AesEncryption implements IEncryptionImplementation {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
         
-        /*byte[] oneArray = new byte[64];
-        Arrays.fill(oneArray, (byte)1);
-        readBuffer.put(oneArray);*/
-        
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();
             cipher.doFinal(readBuffer, writeBuffer);

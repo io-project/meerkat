@@ -61,14 +61,6 @@ public class AesDecryption implements IDecryptionImplementation {
         Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
         cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
         
-        /*byte[] oneArray = new byte[64];
-        Arrays.fill(oneArray, (byte)1);
-        byte[] ansArray = new byte[64];
-        
-        boolean checked = false;*/
-        
-            
-        
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();
             try{
@@ -77,13 +69,6 @@ public class AesDecryption implements IDecryptionImplementation {
             	throw new IncorrectPasswordException();
             }
             writeBuffer.flip();
-            /*if(!checked){
-        		for(int i=0; i<64; i++)
-        			ansArray[i] = writeBuffer.get();
-        		if(!Arrays.equals(oneArray, ansArray))
-        			throw new IncorrectPasswordException();
-        		checked = true;
-        	}*/
             writeChannel.write(writeBuffer);
             readBuffer.clear();
             writeBuffer.clear();
