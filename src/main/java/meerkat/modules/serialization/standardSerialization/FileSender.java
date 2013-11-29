@@ -16,11 +16,9 @@ public class FileSender {
 		long red = 0L;
 		
 		do {
-			
 			long read = Math.min(Integer.MAX_VALUE, ch.size() - red);
 			MappedByteBuffer mb = ch.map(FileChannel.MapMode.READ_ONLY, red,
 					read);
-			
 			
 			while (mb.hasRemaining()) {
 				
