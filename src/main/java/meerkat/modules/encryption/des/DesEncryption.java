@@ -8,6 +8,8 @@ import meerkat.modules.gui.IPasswordValidator;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -18,7 +20,12 @@ public class DesEncryption implements IEncryptionImplementation {
 
     ReadableByteChannel readChannel = null;
     WritableByteChannel writeChannel = null;
-    private SecretKey key = null;
+    private SecretKey secretKey = null;
+    private DesAddition desAddition = new DesAddition();
+
+    public DesAddition getDesAddition() {
+        return desAddition;
+    }
 
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
@@ -37,8 +44,7 @@ public class DesEncryption implements IEncryptionImplementation {
                 .build();
         if (dialog.exec()) {
             try {
-                key = DesAddition.makeKeyFromPassword(new String(dialog.getPasswordValue(label_password)).getBytes());
-                return true;
+            	return desAddition.makeSecretKeyFromPassword(dialog.getPasswordValue(label_password));
             } catch (Exception e) {
                 IDialog d = dialogBuilderFactory.newDialogBuilder().addLabel("DES alghoritm not found.").build();
                 d.exec();
@@ -50,11 +56,11 @@ public class DesEncryption implements IEncryptionImplementation {
     @Override
     public void run() throws Exception {
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer writeBuffer = ByteBuffer.allocate(1032);
 
-        // initializing cipher...
-        Cipher cipher = Cipher.getInstance("DES");
-        cipher.init(Cipher.ENCRYPT_MODE, key);
+        secretKey = desAddition.getSecretKey();
+        Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5PADDING");
+        cipher.init(Cipher.ENCRYPT_MODE, secretKey, new IvParameterSpec(new byte[8]));
 
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();

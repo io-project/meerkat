@@ -1,5 +1,6 @@
 package meerkat.modules.encryption.des;
 
+import meerkat.modules.IncorrectPasswordException;
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
@@ -8,6 +9,8 @@ import meerkat.modules.gui.IPasswordValidator;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+
 import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
@@ -17,7 +20,12 @@ public class DesDecryption implements IDecryptionImplementation {
 
     ReadableByteChannel readChannel = null;
     WritableByteChannel writeChannel = null;
-    private SecretKey key = null;
+    private SecretKey secretKey = null;
+    private DesAddition desAddition = new DesAddition();
+
+    public DesAddition getDesAddition() {
+        return desAddition;
+    }
 
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
@@ -36,8 +44,7 @@ public class DesDecryption implements IDecryptionImplementation {
                 .build();
         if (dialog.exec()) {
             try {
-                key = DesAddition.makeKeyFromPassword(new String(dialog.getPasswordValue(label_password)).getBytes());
-                return true;
+            	return desAddition.makeSecretKeyFromPassword(dialog.getPasswordValue(label_password));
             } catch (Exception e) {
                 IDialog d = dialogBuilderFactory.newDialogBuilder().addLabel("DES alghoritm not found.").build();
                 d.exec();
@@ -48,16 +55,20 @@ public class DesDecryption implements IDecryptionImplementation {
 
     @Override
     public void run() throws Exception {
-        ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer readBuffer = ByteBuffer.allocate(1032);
+        ByteBuffer writeBuffer = ByteBuffer.allocate(1032);
 
-        // initializing cipher...
-        Cipher cipher = Cipher.getInstance("DES");
-        cipher.init(Cipher.DECRYPT_MODE, key);
+        secretKey = desAddition.getSecretKey();
+        Cipher cipher = Cipher.getInstance("DESede/CBC/PKCS5PADDING");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[8]));
 
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();
-            cipher.doFinal(readBuffer, writeBuffer);
+            try{
+            	cipher.doFinal(readBuffer, writeBuffer);
+            }catch(Exception e){
+            	throw new IncorrectPasswordException();
+            }
             writeBuffer.flip();
             writeChannel.write(writeBuffer);
             readBuffer.clear();

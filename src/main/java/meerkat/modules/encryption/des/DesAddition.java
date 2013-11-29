@@ -1,37 +1,52 @@
 package meerkat.modules.encryption.des;
 
-import java.security.InvalidKeyException;
+import java.nio.CharBuffer;
+import java.nio.charset.CharacterCodingException;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Arrays;
 
 import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.DESKeySpec;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.commons.codec.digest.DigestUtils;
 
 public class DesAddition {
 
-	private byte[] hashCode = null;
-
-	public byte[] getHashCodeArray() {
-		return hashCode;
+private SecretKey secretKey = null;
+	
+	public SecretKey getSecretKey(){
+		return secretKey;
 	}
-
+	
 	/**
-	 * This method make password coded by sha512.
-	 * 
+	 * This method make secretKry from password 
 	 * @param byte[] that represent password
-	 * @return SecretKey that represent this password as Key
-	 * @throws InvalidKeyException
-	 * @throws NoSuchAlgorithmException
-	 * @throws InvalidKeySpecException
+	 * @return SecretKeySpec for this password
+	 * @throws InvalidKeySpecException 
+	 * @throws NoSuchAlgorithmException 
+	 * @throws CharacterCodingException 
 	 */
-
-	public static SecretKey makeKeyFromPassword(byte[] password)
-			throws InvalidKeyException, NoSuchAlgorithmException,
-			InvalidKeySpecException {
-		DESKeySpec dks = new DESKeySpec(password);
-		SecretKeyFactory skf = SecretKeyFactory.getInstance("DES");
-		return skf.generateSecret(dks);
+	public boolean makeSecretKeyFromPassword(char[] password) throws InvalidKeySpecException, NoSuchAlgorithmException, CharacterCodingException{
+		
+		byte[] key = DigestUtils.sha512(makePasswordEncodeCharToByteArray(password));
+		key = Arrays.copyOf(key, 24);
+		secretKey = new SecretKeySpec(key, "DESede");
+		return true;
+	}
+	
+	/**
+	 * This method encode char[] password to byte[] password
+	 * @param char[] that represent password obtain from IDialog
+	 * @return byte[] that represent this password encoded to byte array
+	 */
+	public static byte[] makePasswordEncodeCharToByteArray(char[] password) throws CharacterCodingException{
+		Charset charset = Charset.forName("UTF-8");
+		CharsetEncoder encoder = charset.newEncoder();
+		CharBuffer charBuffer = CharBuffer.wrap(password);
+		return encoder.encode(charBuffer).array();
 	}
 
 }
