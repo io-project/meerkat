@@ -1,5 +1,6 @@
 package meerkat.modules.encryption.xor;
 
+import meerkat.modules.IncorrectPasswordException;
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
@@ -10,6 +11,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
 
 public class XorDecryption implements IDecryptionImplementation {
 
@@ -58,10 +60,23 @@ public class XorDecryption implements IDecryptionImplementation {
     public void run() throws Exception {
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
         ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+        
+        byte[] oneArray = new byte[64];
+        Arrays.fill(oneArray, (byte)1);
+        
         int read = -1;
-        hashCode = xorAddition.getHashCodeArray();
+        hashCode = xorAddition.getHashCodeArray(); 
+        boolean checked = false;
+        
         while ((read = readChannel.read(readBuffer)) != -1) {
             readBuffer.flip();
+            if(!checked){
+        		for(int i=0; i<64; i++)
+        			if(oneArray[i] != (byte)((byte)readBuffer.get()^ hashCode[i % hashCode.length]))
+        				throw new IncorrectPasswordException();
+        		read -= 64;
+        		checked = true;
+        	}
             code(readBuffer, read, writeBuffer);
             writeBuffer.flip();
             writeChannel.write(writeBuffer);

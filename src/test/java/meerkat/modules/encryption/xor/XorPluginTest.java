@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.util.Random;
 
+import meerkat.modules.IncorrectPasswordException;
 import meerkat.modules.encryption.xor.MockReadableChannel;
 import meerkat.modules.encryption.xor.MockWriteableChannel;
 import meerkat.modules.encryption.xor.XorEncryption;
@@ -37,16 +38,18 @@ public class XorPluginTest {
 	@Test
 	public void checkSimpleXorEncoding() throws Exception{
 		/*preprare*/
-		int size = 64;
-		byte[] in = new byte[size];
+		int read_size = 64;
+		int write_size = 128;
+		byte[] in = new byte[read_size];
 		new Random().nextBytes(in);
-		writeChannel.setSize(size);
+		writeChannel.setSize(write_size);
 		writeChannel.reset();
 		
 		/*action*/
 		readChannel.setSendMessage(in);
 		xorEncryption.run();
 		readChannel.setSendMessage(writeChannel.getGotMessage());
+		writeChannel.setSize(read_size);
 		writeChannel.reset();
 		xorDecryption.run();
 		
@@ -57,16 +60,43 @@ public class XorPluginTest {
 	@Test
 	public void checkMultiBufferXorEncoding() throws Exception{
 		/*preprare*/
-		int size = 1500;
-		byte[] in = new byte[size];
+		int read_size = 1500;
+		int write_size = 1564;
+		byte[] in = new byte[read_size];
 		new Random().nextBytes(in);
-		writeChannel.setSize(size);
+		writeChannel.setSize(write_size);
 		writeChannel.reset();
 		
 		/*action*/
 		readChannel.setSendMessage(in);
 		xorEncryption.run();
 		readChannel.setSendMessage(writeChannel.getGotMessage());
+		writeChannel.setSize(read_size);
+		writeChannel.reset();
+		xorDecryption.run();
+		
+		/*assertion*/
+		assertArrayEquals(in, writeChannel.getGotMessage());
+	}
+	
+	@Test(expected = IncorrectPasswordException.class)
+	public void incorrectPasswordCheck() throws Exception{
+		/*preprare*/
+		int read_size = 1500;
+		int write_size = 1564;
+		byte[] in = new byte[read_size];
+		new Random().nextBytes(in);
+		writeChannel.setSize(write_size);
+		writeChannel.reset();
+		char[] inPassword = {'a', 'a'};
+		xorDecryption.getXorAddition().makeHashArrayFromPassword(inPassword);
+		
+		
+		/*action*/
+		readChannel.setSendMessage(in);
+		xorEncryption.run();
+		readChannel.setSendMessage(writeChannel.getGotMessage());
+		writeChannel.setSize(read_size);
 		writeChannel.reset();
 		xorDecryption.run();
 		

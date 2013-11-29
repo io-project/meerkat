@@ -10,6 +10,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
+import java.util.Arrays;
 
 
 public class XorEncryption implements IEncryptionImplementation {
@@ -59,9 +60,23 @@ public class XorEncryption implements IEncryptionImplementation {
     public void run() throws Exception {
         ByteBuffer readBuffer = ByteBuffer.allocate(1024);
         ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer checkBuffer = ByteBuffer.allocate(64);
+        
 
-        int read = -1;
         hashCode = xorAddition.getHashCodeArray();
+        
+        byte[] oneArray = new byte[64];
+        Arrays.fill(oneArray, (byte)1);
+        checkBuffer.put(oneArray);
+        checkBuffer.flip();
+        code(checkBuffer, 64, writeBuffer);
+        writeBuffer.flip();
+        writeChannel.write(writeBuffer);
+        writeBuffer.clear();
+        
+        
+        int read = -1;
+        
         while ((read = readChannel.read(readBuffer)) != -1) {
             readBuffer.flip();
             code(readBuffer, read, writeBuffer);
