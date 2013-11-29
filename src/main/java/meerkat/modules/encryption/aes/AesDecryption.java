@@ -12,16 +12,17 @@ import java.nio.channels.ReadableByteChannel;
 import java.nio.channels.WritableByteChannel;
 
 import javax.crypto.Cipher;
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
 
 public class AesDecryption implements IDecryptionImplementation {
 
     ReadableByteChannel readChannel = null;
     WritableByteChannel writeChannel = null;
-    SecretKeySpec secretKey = null;
+    SecretKey secretKey = null;
     private AesAddition aesAddition = new AesAddition();
 
-    public AesAddition getXorAddition() {
+    public AesAddition getAesAddition() {
         return aesAddition;
     }
 
@@ -41,19 +42,24 @@ public class AesDecryption implements IDecryptionImplementation {
                 .addPasswordEdit(label_password, passwordValidator)
                 .build();
         if (dialog.exec()) {
-            return aesAddition.makeSecretKeyFromPassword(dialog.getPasswordValue(label_password));
+            try {
+				return aesAddition.makeSecretKeyFromPassword(dialog.getPasswordValue(label_password));
+			} catch (Exception e) {
+				IDialog d = dialogBuilderFactory.newDialogBuilder().addLabel("AES alghoritm not found.").build();
+                d.exec();
+			}
         }
         return false;
     }
 
     @Override
     public void run() throws Exception {
-        ByteBuffer readBuffer = ByteBuffer.allocate(1024);
-        ByteBuffer writeBuffer = ByteBuffer.allocate(1024);
+        ByteBuffer readBuffer = ByteBuffer.allocate(1040);
+        ByteBuffer writeBuffer = ByteBuffer.allocate(1040);
         
         secretKey = aesAddition.getSecretKey();
-        Cipher cipher = Cipher.getInstance("AES");
-        cipher.init(Cipher.DECRYPT_MODE, secretKey);
+        Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5PADDING");
+        cipher.init(Cipher.DECRYPT_MODE, secretKey, new IvParameterSpec(new byte[16]));
         
         while (readChannel.read(readBuffer) != -1) {
             readBuffer.flip();
