@@ -19,6 +19,10 @@ public class MockWriteableChannel implements WritableByteChannel, InterruptibleC
 		return got.length;
 	}
 	
+	public int getPosition(){
+		return position;
+	}
+	
 	public void setSize(int s){
 		size = s;
 		got = new byte[size];
