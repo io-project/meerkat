@@ -14,8 +14,8 @@ import java.nio.channels.spi.SelectorProvider;
 /**
  * Ta klasa obsługuje zadanie szyfrowania.
  * <p/>
- * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
- * implementacyjny.
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest nieistotny
+ * detal implementacyjny.
  *
  * @author Maciej Poleski
  */
@@ -24,6 +24,9 @@ class EncryptionJob extends JobWithStates<Void> {
     private final EncryptionPipeline pipeline;
     private final ImplementationPack implementationPack;
     private final IDialogBuilderFactory<?> dialogBuilderFactory;
+    /**
+     * Fabryka stanów wewnętrznych które można opisać słowami: ZADANIE ANULOWANE. Jest ona potrzebna dla klasy bazowej.
+     */
     private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
         @Override
         public IState newAbortedState() {

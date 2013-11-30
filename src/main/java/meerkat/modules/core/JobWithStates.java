@@ -3,8 +3,8 @@ package meerkat.modules.core;
 /**
  * Wyabstrahowana logika zarządzania stanami wewnętrznymi "zadań".
  * <p/>
- * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
- * implementacyjny.
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest nieistotny
+ * detal implementacyjny.
  *
  * @param <T> typ rezultatu
  * @author Maciej Poleski
@@ -187,9 +187,9 @@ abstract class JobWithStates<T> implements IJob {
                 public void run() {
                     try {
                         runnable.run();
-                    } catch (Exception e) {
+                    } catch (Exception e) {      // Takie rzeczy się zdarzają - obsługujemy
                         abortBecauseOfFailure(e);
-                    } catch (Throwable t) {
+                    } catch (Throwable t) {      // Poważny błąd - raportujemy, ale pozwalamy zniszczyć wątek
                         abortBecauseOfFailure(t);
                         // To jest najprawdopodobniej błąd
                         throw t;

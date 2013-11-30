@@ -6,7 +6,7 @@ import meerkat.modules.plausible_deniability.IOverridePlugin;
 import meerkat.modules.serialization.ISerializationPlugin;
 
 /**
- * Dobór pluginów w celu realizacji całokształtu działań związanych z szyfrowaniem
+ * Dobór pluginów w celu realizacji całokształtu działań związanych z szyfrowaniem.
  *
  * @author Maciej Poleski
  */

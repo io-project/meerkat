@@ -5,7 +5,10 @@ import meerkat.modules.import_export.IImportExportPlugin;
 import meerkat.modules.serialization.ISerializationPlugin;
 
 /**
- * Dobór pluginów w celu realizacji całokształtu działań związanych z deszyfrowaniem
+ * Dobór pluginów w celu realizacji całokształtu działań związanych z deszyfrowaniem. Jest on odtwarzany podczas
+ * importowania aby zwolnić użytkownika z konieczności ręcznego wprowadzania tych danych.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
  *
  * @author Maciej Poleski
  */

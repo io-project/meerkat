@@ -6,6 +6,8 @@ import meerkat.modules.serialization.ISerializationPlugin;
 
 /**
  * Klasa implementująca ten interfejs dostarcza funkcjonalności menażera pluginów.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
  *
  * @author Maciej Poleski
  */

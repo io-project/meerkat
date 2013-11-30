@@ -5,15 +5,17 @@ import meerkat.modules.encryption.des.DesPlugin;
 import meerkat.modules.encryption.none.NoEncryptionPlugin;
 import meerkat.modules.encryption.xor.XorPlugin;
 import meerkat.modules.gui.standard.GuiPlugin;
-import meerkat.modules.import_export.standard.BasicPlugin;
 import meerkat.modules.import_export.dropbox.DropboxPlugin;
 import meerkat.modules.import_export.ftp.FtpPlugin;
+import meerkat.modules.import_export.standard.BasicPlugin;
 import meerkat.modules.plausible_deniability.none.NoOverridePlugin;
 import meerkat.modules.serialization.singleFile.SingleFileSerializationPlugin;
 import meerkat.modules.serialization.standardSerialization.StandardSerializationPlugin;
 
 /**
  * Ta klasa służy do uruchomienia aplikacji.
+ * <p/>
+ * Odpowiada za załadowanie/rejestracje istniejących pluginów oraz uruchomienie faktycznej implementacji.
  *
  * @author Maciej Poleski
  */
@@ -34,6 +36,11 @@ public class App {
         core.registerPlugin(new FtpPlugin());
     }
 
+    /**
+     * Entry point aplikacji.
+     *
+     * @param args Parametry przekazane z linii poleceń - ignorowane.
+     */
     public static void main(String[] args) {
         Core core = new Core();
         registerAllPlugins(core);

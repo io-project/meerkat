@@ -10,6 +10,8 @@ import java.nio.ByteBuffer;
 
 /**
  * Tutaj zapisane są informacje o wykorzystanych pluginach podczas szyfrowania na potrzeby deszyfrowania.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
  *
  * @author Maciej Poleski
  */
@@ -79,6 +81,15 @@ final class Memento implements Serializable {
         return ByteBuffer.wrap(baos.toByteArray());
     }
 
+    /**
+     * Tworzy {@code DecryptionPipeline} na podstawie posiadanych danych i podanego menadżera pluginów.
+     *
+     * @param importExportPlugin Plugin importu/eksportu który zostanie umieszczony w wyniku.
+     * @param pluginManager      Menadżer pluginów który zostanie wykorzystany do uzyskania pluginów o danych
+     *                           identyfikatorach.
+     * @return Zainicjalizowany {@code DecryptionPipeline}.
+     * @throws PluginNotFoundException Jeżeli {@code pluginManager} nie odnajdzie pluginów o danych identyfikatorach.
+     */
     DecryptionPipeline getDecryptionPipeline(IImportExportPlugin importExportPlugin, IPluginManager pluginManager) throws PluginNotFoundException {
         IEncryptionPlugin encryptionPlugin = pluginManager.getEncryptionPluginForId(encryptionPluginId);
         ISerializationPlugin serializationPlugin = pluginManager.getSerializationPluginForId(serializationPluginId);

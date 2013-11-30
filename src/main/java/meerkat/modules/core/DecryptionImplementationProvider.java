@@ -9,6 +9,10 @@ import java.nio.channels.Pipe;
 import java.nio.channels.spi.SelectorProvider;
 
 /**
+ * Ta klasa dostarcza implementacje obsługi procesu szyfrowania dla niekompletnej klasy {@code DecryptionJobTemplate}.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
+ *
  * @author Maciej Poleski
  */
 class DecryptionImplementationProvider implements IDecryptionImplementationProvider<DecryptionImplementationPack, IState, Void> {
@@ -48,6 +52,15 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
         };
     }
 
+    /**
+     * Tworzy i zwraca obiekt stanu wewnętrznego obsługujący zainicjalizowaną pracę polegającą na deszyfrowaniu.
+     *
+     * @param implementationPack Paczka implementacji które mają zostać wykorzystane do wykonania zadania.
+     * @param parent             Instancja niekompletnego szablonu obsługującego ten proces deszyfrowania.
+     * @param importThread       Wątek na którym pracuje implementacja pluginu importującego dane.
+     * @param importDecryptPipe  Pipe przesyłający dane z modułu importującego do modułu deszyfrującego.
+     * @return Stan gotowy do wykorzystania w szablonie zadania deszyfrowania.
+     */
     IState getWorkerState(final DecryptionImplementationPack implementationPack, final DecryptionJobTemplate<DecryptionImplementationPack, Void> parent, final Thread importThread, final Pipe importDecryptPipe) {
         return parent.new BranchingState() {
             Thread decryptThread;
@@ -108,6 +121,10 @@ class DecryptionImplementationProvider implements IDecryptionImplementationProvi
 }
 
 /**
+ * Pakiet implementacji wybranych przez użytkownika pluginów dla klasy {@code DecryptionImplementationProvider}.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
+ *
  * @author Maciej Poleski
  */
 class DecryptionImplementationPack {

@@ -10,6 +10,11 @@ import java.nio.channels.Pipe;
 import java.nio.channels.spi.SelectorProvider;
 
 /**
+ * Ta klasa dostarcza implementacje obsługi procesu podglądu szyfrowania dla niekompletnej klasy
+ * {@code DecryptionJobTemplate}.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
+ *
  * @author Maciej Poleski
  */
 class DecryptionPreviewImplementationProvider implements IDecryptionImplementationProvider<DecryptionPreviewImplementationPack, IState, TreeModel> {
@@ -49,6 +54,16 @@ class DecryptionPreviewImplementationProvider implements IDecryptionImplementati
         };
     }
 
+    /**
+     * Tworzy i zwraca obiekt stanu wewnętrznego obsługujący zainicjalizowaną pracę polegającą na podglądzie
+     * zaszyfrowanego zbioru danych.
+     *
+     * @param implementationPack Paczka implementacji które mają zostać wykorzystane do wykonania zadania.
+     * @param parent             Instancja niekompletnego szablonu obsługującego ten proces deszyfrowania.
+     * @param importThread       Wątek na którym pracuje implementacja pluginu importującego dane.
+     * @param importDecryptPipe  Pipe przesyłający dane z modułu importującego do modułu deszyfrującego.
+     * @return Stan gotowy do wykorzystania w szablonie zadania deszyfrowania.
+     */
     private IState getWorkerState(final DecryptionPreviewImplementationPack implementationPack, final DecryptionJobTemplate<DecryptionPreviewImplementationPack, TreeModel> parent, final Thread importThread, final Pipe importDecryptPipe) {
         return parent.new BranchingState() {
             Thread decryptThread;
@@ -115,6 +130,11 @@ class DecryptionPreviewImplementationProvider implements IDecryptionImplementati
     }
 }
 
+/**
+ * Pakiet implementacji wybranych przez użytkownika pluginów dla klasy {@code DecryptionPreviewImplementationProvider}.
+ * <p/>
+ * To nie jest część API. To nieistotny detal implementacyjny.
+ */
 class DecryptionPreviewImplementationPack {
     final IImportImplementation importImplementation;
     final IDecryptionImplementation decryptionImplementation;

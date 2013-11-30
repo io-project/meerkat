@@ -7,5 +7,11 @@ package meerkat.modules.core;
  * @author Maciej Poleski
  */
 public interface IResultCallback<T> {
+
+    /**
+     * Przekazuje rezultat.
+     *
+     * @param result Rezultat
+     */
     void setResult(T result);
 }

@@ -9,36 +9,37 @@ import javax.swing.tree.TreeModel;
 import java.util.List;
 
 /**
- * Funkcjonalność oferowana przez Core dla pozostałych modułów.
+ * Funkcjonalność oferowana przez moduł Core dla klienta (np GUI). Jeden z dwóch najważniejszych interfejsów tego
+ * modułu (drugim jest {@code IJob}).
  *
  * @author Maciej Poleski
  */
 public interface ICore {
     /**
-     * @return Lista (tylko do odczytu) pluginów serializacji.
+     * @return Lista (tylko do odczytu) dostępnych pluginów serializacji.
      */
     List<ISerializationPlugin> getSerializationPlugins();
 
     /**
-     * @return Lista (tylko do odczytu) pluginów szyfrowania.
+     * @return Lista (tylko do odczytu) dostępnych pluginów szyfrowania.
      */
     List<IEncryptionPlugin> getEncryptionPlugins();
 
     /**
-     * @return Lista (tylko do odczytu) pluginów importu/eksportu.
+     * @return Lista (tylko do odczytu) dostępnych pluginów importu/eksportu.
      */
     List<IImportExportPlugin> getImportExportPlugins();
 
     /**
-     * @return Lista (tylko do odczytu) pluginów nadpisywania.
+     * @return Lista (tylko do odczytu) dostępnych pluginów nadpisywania.
      */
     List<IOverridePlugin> getOverridePlugins();
 
     /**
-     * Tworzy obiekt służący do komunikacji z zadaniem szyfrowania
+     * Tworzy obiekt służący do komunikacji z zadaniem szyfrowania.
      *
      * @param pipeline      Zainicjalizowany pipeline wybranymi przez użytkownika pluginami.
-     * @param observer      Obserwator tego zadania.
+     * @param observer      Opcjonalny obserwator tego zadania.
      * @param resultHandler handler który zostanie uruchomiony po zakończeniu zadania.
      * @return Obiekt pozwalający na komunikację z procesem szyfrowania.
      */
@@ -48,7 +49,7 @@ public interface ICore {
      * Tworzy obiekt służący do komunikacji z zadaniem deszyfrowania.
      *
      * @param importPlugin  Plugin służący do importu (wybrany przez użytkownika)
-     * @param observer      Obserwator tego zadania.
+     * @param observer      Opcjonalny obserwator tego zadania.
      * @param resultHandler handler który zostanie uruchomiony po zakończeniu zadania.
      * @return Obiekt pozwalający na komunikację z procesem deszyfrowania.
      */
@@ -58,9 +59,9 @@ public interface ICore {
      * Tworzy obiekt służący do komunikacji z zadaniem podglądu zaszyfrowanej struktury.
      *
      * @param importPlugin  Plugin służący do importu (wybrany przez użytkownika)
-     * @param observer      Obserwator tego zadania.
+     * @param observer      Opcjonalny obserwator tego zadania.
      * @param resultHandler handler który zostanie uruchomiony po zakończeniu zadania.
-     * @return Obiekt pozwalający na komunikację z procesem deszyfrowania.
+     * @return Obiekt pozwalający na komunikację z procesem podglądu zaszyfrowanej struktury.
      */
     IJob prepareDecryptionPreviewJob(IImportExportPlugin importPlugin, IJobObserver observer, IResultHandler<TreeModel> resultHandler);
 

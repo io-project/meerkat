@@ -11,13 +11,14 @@ import java.nio.channels.Pipe;
 import java.nio.channels.spi.SelectorProvider;
 
 /**
- * Ta klasa obsługuje zadanie deszyfrowania.
+ * Ta klasa obsługuje zadanie deszyfrowania. Jest niekompletna. Do działania wymaga providera implementującego
+ * {@code IDecryptionImplementationProvider} - wykorzystanego do uzyskania brakującej części implementacji.
  * <p/>
- * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest detal
- * implementacyjny.
+ * To nie jest część API. W żadnym wypadku nie wolno zakładać że dysponujesz obiektem tej klasy. To jest nieistotny
+ * detal implementacyjny.
  *
- * @param <T> typ ImplementationPack
- * @param <U> typ rezultatu (dla handlera)
+ * @param <T> typ ImplementationPack wykorzystanego przez konkretnego providera.
+ * @param <U> typ rezultatu całego procesu (dla handlera).
  * @author Maciej Poleski
  */
 class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
@@ -25,6 +26,9 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
     private final IDialogBuilderFactory<?> dialogBuilderFactory;
     private final IPluginManager pluginManager;
     private final IDecryptionImplementationProvider<T, IState, U> decryptionImplementationProvider;
+    /**
+     * Fabryka stanów wewnętrznych które można opisać słowami: ZADANIE ANULOWANE. Jest ona potrzebna dla klasy bazowej.
+     */
     private final IAbortedStateFactory abortedStateFactory = new IAbortedStateFactory() {
         @Override
         public IState newAbortedState() {
@@ -47,6 +51,11 @@ class DecryptionJobTemplate<T, U> extends JobWithStates<U> {
         this.currentState = new ReadyState(importPlugin);
     }
 
+    /**
+     * Udostępnia fabrykę budowniczych okien dialogowych (potrzebna dla providerów).
+     *
+     * @return Fabryka budowniczych okien dialogowych
+     */
     IDialogBuilderFactory<?> getDialogBuilderFactory() {
         return dialogBuilderFactory;
     }
