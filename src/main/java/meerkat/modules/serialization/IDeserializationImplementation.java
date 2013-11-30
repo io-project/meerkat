@@ -11,12 +11,6 @@ import java.nio.channels.ReadableByteChannel;
  * @author Maciej Poleski
  */
 public interface IDeserializationImplementation extends IPrepare, meerkat.modules.Runnable {
-
-    /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
-     * funkcjonalności serializacji. Należy pamiętać o tym, że przy deserializacji czasem chcemy uzyskać wejściowe
-     * drzewo plików, a czasem jedynie dane na potrzeby wyświetlenia podglądu.
-     */
-
     /**
      * Ta metoda zostanie uruchomiona przed implementacją w celu dostarczenia kanału wejściowego.
      *

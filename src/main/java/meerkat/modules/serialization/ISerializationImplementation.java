@@ -19,9 +19,4 @@ public interface ISerializationImplementation extends IPrepare, meerkat.modules.
      * @param <T>     Typ kanału który jest zapisywalny i przerywalny.
      */
     <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel);
-
-    /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
-     * funkcjonalności serializacji. Należy pamiętać o tym, że przy deserializacji czasem chcemy uzyskać wejściowe
-     * drzewo plików, a czasem jedynie dane na potrzeby wyświetlenia podglądu.
-     */
 }

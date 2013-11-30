@@ -1,7 +1,7 @@
 package meerkat.modules;
 
 /**
- * Kiedy potrzebny plugin nie jest zarejestrowany w Core.
+ * Wyjątek sygnalizuje sytuację kiedy potrzebny plugin nie jest zarejestrowany w Core.
  *
  * @author Maciej Poleski
  */

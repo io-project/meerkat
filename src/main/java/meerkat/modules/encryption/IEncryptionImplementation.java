@@ -27,9 +27,4 @@ public interface IEncryptionImplementation extends IPrepare, meerkat.modules.Run
      * @param <T>     Typ kanału który jest zapisywalny i przerywalny.
      */
     <T extends WritableByteChannel & InterruptibleChannel> void setOutputChannel(T channel);
-
-    /* Tutaj powinien pojawić się interfejs z którego będą korzystać pozostałe moduły w celu wykorzystania
-     * funkcjonalności szyfrowania. Należy pamiętać o tym, że przy deszyfrowaniu czasem chcemy uzyskać wejściowe
-     * dane, a czasem jedynie ich część wystarczającą do wyświetlenia drzewa plików.
-     */
 }
