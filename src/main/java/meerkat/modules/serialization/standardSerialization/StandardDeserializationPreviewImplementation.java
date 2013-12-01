@@ -24,7 +24,7 @@ public class StandardDeserializationPreviewImplementation implements
 	private String path;
 	private ReadableByteChannel inputChannel;
 	private final TreeModelBuilder treeModelBuilder = new TreeModelBuilder();
-	private TreeModel treeModel;
+	private IResultCallback<TreeModel> resultCallback;
 
     @Override
     public boolean prepare(IDialogBuilderFactory<?> dialogBuilderFactory) {
@@ -48,7 +48,10 @@ public class StandardDeserializationPreviewImplementation implements
         in = new ObjectInputStream(bis);
         DirectoryNode node = (DirectoryNode) in.readObject();
         
+        TreeModel treeModel;
         treeModel = treeModelBuilder.buildTreeModel(node);
+        
+        resultCallback.setResult(treeModel);
 
 	}
 	
@@ -63,12 +66,15 @@ public class StandardDeserializationPreviewImplementation implements
 	@Override
 	public <T extends ReadableByteChannel & InterruptibleChannel> void setInputChannel(
 			T channel) {
+		
 		inputChannel = channel;
+		
 	}
 
 	@Override
 	public void setResultCallback(IResultCallback<TreeModel> resultCallback) {
-		// TODO Auto-generated method stub
+		
+		this.resultCallback = resultCallback;
 
 	}
 
