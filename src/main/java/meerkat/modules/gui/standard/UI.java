@@ -1,13 +1,11 @@
 package meerkat.modules.gui.standard;
 
 import java.awt.CardLayout;
-import javax.swing.GroupLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.tree.TreeModel;
 import meerkat.modules.core.EncryptionPipeline;
 import meerkat.modules.core.ICore;
-import meerkat.modules.core.IJob;
 import meerkat.modules.core.IJobObserver;
 import meerkat.modules.core.IResultHandler;
 import meerkat.modules.encryption.IEncryptionPlugin;
@@ -71,21 +69,6 @@ public class UI extends javax.swing.JFrame {
         }
     }
     
-    private IResultHandler createHandler() {
-        return new IResultHandler(){
-
-            @Override
-            public void handleResult(Object result) {
-                // TODO implement
-            }
-            @Override
-            public void handleException(Throwable t) {
-                // TODO implement
-                t.printStackTrace();
-            }
-        };
-    }
-    
     private void startEncryption() {
         
         ISerializationPlugin p1 = null;
@@ -108,7 +91,7 @@ public class UI extends javax.swing.JFrame {
         
         EncryptionPipeline pipeline = new EncryptionPipeline(p1,p2,p3,p4);
         IJobObserver observer = new JobObserver(this);
-        IResultHandler<Void> resultHandler = createHandler();
+        IResultHandler<Void> resultHandler = new StandardResultHandler(this);
         core.prepareEncryptionJob(pipeline, observer, resultHandler).start();
     }
     
@@ -120,7 +103,7 @@ public class UI extends javax.swing.JFrame {
         }
         
         IJobObserver observer = new JobObserver(this);
-        IResultHandler<Void> resultHandler = createHandler();
+        IResultHandler<Void> resultHandler = new StandardResultHandler(this);
         core.prepareDecryptionJob(p8, observer, resultHandler).start();
     }
     
@@ -131,7 +114,7 @@ public class UI extends javax.swing.JFrame {
         }
         
         IJobObserver observer = new JobObserver(this);
-        IResultHandler<TreeModel> resultHandler = createHandler();
+        IResultHandler<TreeModel> resultHandler = new TreeResultHandler(this);
         core.prepareDecryptionPreviewJob(p6, observer, resultHandler).start();
     }
     

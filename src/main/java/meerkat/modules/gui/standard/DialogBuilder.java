@@ -22,6 +22,8 @@ import javax.swing.JPasswordField;
 import javax.swing.JProgressBar;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
+import javax.swing.JTree;
+import javax.swing.tree.TreeModel;
 import meerkat.modules.gui.IDialog;
 import meerkat.modules.gui.IDialogBuilder;
 import meerkat.modules.gui.IDialogValidator;
@@ -290,7 +292,8 @@ public class DialogBuilder implements IDialogBuilder {
     
     
     // non-standard build and non-standard components
-    // for jobObserver dialogs
+    // for jobObserver/resultHandler dialogs
+    
     
     void buildAndShow() {
         updateLayout();
@@ -303,6 +306,21 @@ public class DialogBuilder implements IDialogBuilder {
         p.setIndeterminate(true);
         hGroup.addComponent(p, PREFERRED_SIZE, DEFAULT_SIZE, DEFAULT_SIZE);
         vGroup.addComponent(p, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
+        .addGap(30, 30, 30);
+        return this;
+    }
+    
+    IDialogBuilder addTree(TreeModel t) {
+        
+        JTree tree = new JTree(t);
+        hGroup.addGroup(
+                layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(tree)
+                .addGap(0, 0, Short.MAX_VALUE)
+        );
+                
+        vGroup.addComponent(tree, PREFERRED_SIZE, DEFAULT_SIZE, PREFERRED_SIZE)
         .addGap(30, 30, 30);
         return this;
     }
