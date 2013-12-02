@@ -2,6 +2,7 @@ package meerkat.modules.core;
 
 import meerkat.modules.IPlugin;
 import meerkat.modules.PluginNotFoundException;
+import meerkat.modules.Runnable;
 import meerkat.modules.encryption.IDecryptionImplementation;
 import meerkat.modules.encryption.IEncryptionImplementation;
 import meerkat.modules.encryption.IEncryptionPlugin;
@@ -42,6 +43,10 @@ class PluginsProvider implements IPluginManager {
     private int overridePluginsCount = 0;
 
     ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength, final String fileName, final TreeModel treeModel) {
+        return getSerializationPlugin(dataSource, dataLength, fileName, treeModel, null);
+    }
+
+    ISerializationPlugin getSerializationPlugin(final Callable<Byte> dataSource, final int dataLength, final String fileName, final TreeModel treeModel, final Runnable injectionToDeserialization) {
         ISerializationPlugin result = new ISerializationPlugin() {
             final ArrayList<Byte> serializedData = new ArrayList<>();
             final String pluginId = "__builtin__testing_serialization" + serializationPluginsCount++;
@@ -100,6 +105,8 @@ class PluginsProvider implements IPluginManager {
                         int j;
                         ByteBuffer buffer = ByteBuffer.allocate(1024);
                         int n;
+                        if (injectionToDeserialization != null)
+                            injectionToDeserialization.run();
                         while ((n = channel.read(buffer)) != -1) {
                             buffer.flip();
                             for (j = 0; j < n; ++i, ++j) {
@@ -248,6 +255,10 @@ class PluginsProvider implements IPluginManager {
     }
 
     IImportExportPlugin getImportExportPlugin() {
+        return getImportExportPlugin(false);
+    }
+
+    IImportExportPlugin getImportExportPlugin(final boolean hangInImport) {
         IImportExportPlugin result = new IImportExportPlugin() {
             final ArrayList<Byte> exportedData = new ArrayList<>();
             final String pluginId = "__builtin_testing_importexport" + importExportPluginsCount++;
@@ -276,6 +287,11 @@ class PluginsProvider implements IPluginManager {
                         ByteBuffer byteBuffer = ByteBuffer.wrap(d);
                         assertEquals(d.length, channel.write(byteBuffer));
                         exportedData.clear();
+                        if (hangInImport) {
+                            synchronized (this) {
+                                wait();
+                            }
+                        }
                     }
                 };
             }
