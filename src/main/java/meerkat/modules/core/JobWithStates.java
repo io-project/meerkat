@@ -161,6 +161,7 @@ abstract class JobWithStates<T> implements IJob {
 
         void abortBecauseOfFailure(Throwable t) {
             initializeNextState(new FailedState(t));
+            currentState.abort();
         }
 
         void initializeNextState(IState nextState) {
