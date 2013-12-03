@@ -7,8 +7,11 @@ import meerkat.modules.serialization.IDeserializationImplementation;
 
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
 import java.nio.channels.InterruptibleChannel;
 import java.nio.channels.ReadableByteChannel;
+
+import javax.swing.tree.TreeModel;
 
 public class StandardDeserializationImplementation implements
         IDeserializationImplementation {
@@ -37,21 +40,29 @@ public class StandardDeserializationImplementation implements
 
     @Override
     public void run() throws Exception {
+    	ByteBuffer buf = ByteBuffer.allocate(4);
 
-        ByteBuffer buf = ByteBuffer.allocate(4);
+		int bytesRead = inputChannel.read(buf);
+		byte[] bytes = buf.array();
+		int treeSize = bytesToInt(bytes);
 
-        int bytesRead = inputChannel.read(buf);
-        byte[] bytes = buf.array();
-        int treeSize = bytesToInt(bytes);
+		InputStream ind = null;
+		ind = Channels.newInputStream(inputChannel);
 
-        buf = ByteBuffer.allocate(treeSize);
-        bytesRead = inputChannel.read(buf);
+		bytes = new byte[(int) treeSize];
 
-        bytes = buf.array();
-        ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
-        ObjectInput in = null;
-        in = new ObjectInputStream(bis);
-        DirectoryNode node = (DirectoryNode) in.readObject();
+		int offset = 0;
+		int numRead = 0;
+		while (offset < bytes.length
+				&& (numRead = ind.read(bytes, offset, bytes.length - offset)) >= 0) {
+			offset += numRead;
+		}
+
+		ByteArrayInputStream bis = new ByteArrayInputStream(bytes);
+		ObjectInput in = null;
+		in = new ObjectInputStream(bis);
+
+		DirectoryNode node = (DirectoryNode) in.readObject();
 
         if (!path.endsWith(File.separator)) {
             path += File.separator;

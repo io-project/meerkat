@@ -12,7 +12,7 @@ public class TreeModelBuilder {
 	
 	private DefaultMutableTreeNode DFS(DirectoryNode node) {
 		 DefaultMutableTreeNode treeNode =
-			        new DefaultMutableTreeNode(node.getName());
+			        new DefaultMutableTreeNode(node.getRelativePath());
 		 
 		 for(DirectoryNode n : node.getContent())
 			 	treeNode.add(DFS(n));
