@@ -58,8 +58,9 @@ abstract class JobWithStates<T> implements IJob {
     void abort(IAbortedStateFactory abortedStateFactory) {
         synchronized (this) {
             if (currentState instanceof IAbortableState) {
-                currentState.abort(); // Być może poprzedni stan jeszcze nie zakończył wykonywać swojego zadania - przerwij je.
+                IState lockedState = currentState;
                 currentState = abortedStateFactory.newAbortedState();
+                lockedState.abort(); // Być może poprzedni stan jeszcze nie zakończył wykonywać swojego zadania - przerwij je.
                 runHandler(currentState.getState()); // Poprzedni stan nie był anulowany - zachodzi zmiana - handler
             }
         }
