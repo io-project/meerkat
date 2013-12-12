@@ -1,6 +1,7 @@
 package meerkat.modules.gui.standard;
 
 import java.awt.CardLayout;
+import java.util.concurrent.Semaphore;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.tree.TreeModel;
@@ -20,14 +21,20 @@ import meerkat.modules.serialization.ISerializationPlugin;
 public class UI extends javax.swing.JFrame {
 
     private final ICore core;
+    private final Semaphore s;
     
     public UI(ICore core) {
         ImageIcon icon  = new ImageIcon("meerkat.png","");
         setIconImage(icon.getImage());
         
         this.core = core;
+        this.s = new Semaphore(1);
         initComponents();
         initComboBoxes();
+    }
+    
+    Semaphore getSemaphore() {
+        return s;
     }
     
     JPanel getDialogPanel() {

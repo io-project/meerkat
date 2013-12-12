@@ -21,6 +21,8 @@ public class JobObserver implements IJobObserver {
     @Override
     public void update(final IJob job, IJob.State state) {
         
+        if(!ui.getSemaphore().tryAcquire()) return;
+        
         if(state.equals(state.PREPARING)) {
             ui.disableComponents();
         }
@@ -43,13 +45,10 @@ public class JobObserver implements IJobObserver {
             db.buildAndShow();
         }
         
-        if(state.equals(state.FINISHED)) {
-           
-        }
-        
         if(state.equals(state.ABORTED)) {
             ui.enableComponents();
         }
+        
         if(state.equals(state.FAILED)) {
             ui.clearDialogPanel();
             
@@ -68,7 +67,8 @@ public class JobObserver implements IJobObserver {
             db.initButton(b1);
             db.buildAndShow();
         }
-    
+        
+        ui.getSemaphore().release();
     }
     
 }
